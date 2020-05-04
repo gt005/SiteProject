@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/65f48fc481.js" crossorigin="anonymous"></script>
+
+    {% block head %}
+
+    {% endblock %}
+
+    <title>
+        {% block title %}
+
+        {% endblock %} | The Sun
+    </title>
+</head>
+<body>
+  <script>
+    document.cookie = "foo=bar;";
+    if (!document.cookie)
+    {
+  alert("This website requires cookies to function properly");
+    }
+</script>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="{{ url_for('index') }}">The Sun</a>
+  
+  <div class="collapse navbar-collapse show" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('index') }}"><i class="fa fa-home" aria-hidden="true"></i> Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#"><i class="fa fa-video-camera" aria-hidden="true"></i> Videos</a>
+      </li>
+      {% if not request.cookies.get('session') %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('login') }}"><i class="fa fa-user" aria-hidden="true"></i> Sign in / Sign up</a>
+        </li>
+      {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('index') }}"><i class="fa fa-user" aria-hidden="true"></i> Profile</a>
+        </li>
+      {% endif %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('about_us') }}"><i class="fa fa-question" aria-hidden="true"></i></i> About us</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+
+<div class="container">
+    <div class="content_title">
+        <h1>
+            {% block content_title %}
+
+            {% endblock %}
+        </h1>
+
+        {% block content %}
+
+        {% endblock %}
+    </div>
+</div>
+
+</body>
+</html>

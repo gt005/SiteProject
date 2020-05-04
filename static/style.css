@@ -1,0 +1,145 @@
+body {
+  background-color: white;
+
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: #C8D4E5;
+}
+
+.navbar-light:hover .navbar-nav:hover .nav-link:hover {
+  color: #98A1AD !important;
+}
+
+sign-up-button.button {
+  background: none;
+  border: 0px;
+}
+
+.box {
+  width: 500px;
+  padding: 40px;
+  position: relative;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, 30%);
+  background: none;
+  text-align: center;
+  justify-content: center;
+}
+
+.box input[type="text"], .box input[type="password"]{
+  border: 0;
+  background: none;
+  display: block;
+  margin: 20px auto;
+  text-align: center;
+  border: 2px solid #4D6FBB;
+  border-radius: 30px;
+  padding: 12px 10px;
+  width: 300px;
+  outline: none;
+  transition: 0.25s;
+  caret-color: #3498db;
+  color: #4D6FBB;
+}
+
+.box h1 {
+  color: black;
+  font-weight: 500;
+  background: none;
+}
+
+.box input[type="text"]:hover, .box input[type="password"]:hover  {
+  border: 2px solid #45c4db;
+  padding: 12px 30px;
+  background: none;
+  width: 400px;
+}
+
+.box input[type="text"]:focus, .box input[type="password"]:focus  {
+  border: 2px solid #45c4db;
+  padding: 12px 30px;
+  background: none;
+}
+
+.box input[type="submit"]{
+  background: none;
+  border-radius: 24px;
+  border: 2px solid #28a745;
+  padding: 12px 40px;
+  width: 150px;
+  color: #28a745;
+  text-align: center;
+  margin: 20px auto;
+  transition: 0.25s;
+  outline: none;
+  display: block;
+  cursor: pointer;
+}
+
+.box input[type="submit"]:hover {
+  background: #28a745;
+  color: white;
+}
+
+.url {
+  color: #0457ff;
+  font-size: 13px;
+  background: none; 
+  border: 0;
+}
+
+.url:hover {
+  color: #4bdb72;
+  background: none; 
+  border: 0;
+  text-decoration: none;
+}
+
+.nav-link {
+  color: #ff9027;
+}
+
+.nav-item {
+  transition: 0.25s;
+}
+
+.nav-item:hover {
+  transform: scale(1.2);
+}
+
+.navbar-brand {
+  font-size: 1.6rem;
+  transition: 0.25s;
+  color: #FFD10F !important;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.2);
+}
+
+.page-404-text {
+  color: red;
+}
+
+.content_title {
+  padding-top: 20px;
+  padding-left: 0px;
+}
+
+.navbar-nav {
+  padding-left: 50px;
+}
+
+.bg-light {
+  background-color: #4D6FBB !important;
+}
+
+.btn-outline-success {
+  color: white;
+}
+
+.form-control {
+  border-radius: .4rem;
+}

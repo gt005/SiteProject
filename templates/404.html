@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Not found
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='style.css', v=1)}}">
+{% endblock %}
+
+{% block content %}
+	<span class="page-404-text">
+		Ups... Here is Nothing(
+	</span>
+{% endblock %}

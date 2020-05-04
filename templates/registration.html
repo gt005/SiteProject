@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='style.css', v=1)}}">
+{% endblock %}
+
+{% block title %}
+    Registration
+{% endblock %}
+
+
+{% block content %}
+<form class="box" action="#" method="post">
+  <h1>Sign up</h1>
+  {% if message %}
+  <div class="alert alert-danger" role="alert">
+  	{{ message}}
+  </div>
+  {% endif %}
+  <input type="text" name="username" placeholder="Username" value="">
+  <input type="password" name="password" placeholder="Password">
+  <input type="password" name="rep_password" placeholder="Repeat password">
+  <input type="submit" name="do_signup" value="Sign up">
+  <div>
+    <button style="background: none; border: 0;"><a href="{{ url_for('login') }}" class="url">Already have account?</a></button>
+  </div>
+</form>
+{% endblock %}
