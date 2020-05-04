@@ -5,9 +5,7 @@
 {% endblock %}
 
 {% block title %}
-
   Main
-
 {% endblock %}
 
 {% block content_title %}
@@ -17,7 +15,7 @@
 {% endblock %}
 
 {% block content %}
-<ul>
+<ul class="listVideo">
   {% for file_name in listOfVideos %}
     <div class="listVideoElement">  
       <li>
@@ -29,6 +27,4 @@
     </div>
   {% endfor %}
 </ul>
-
-
 {% endblock %}
