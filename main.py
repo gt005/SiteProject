@@ -6,7 +6,12 @@ import re
 import mysql.connector
 
 
-
+data_base = mysql.connector.connect(
+    host='localhost',
+    user='root',
+    passwd='gt005gt005',
+    database='sitedb'
+)
 
 db_cursor = data_base.cursor()
 
@@ -37,7 +42,7 @@ def accessing_the_database(query, changes=False):
 
 @app.route('/')
 def index():
-    return render_template('index.html', session=True)
+    return render_template('index.html', session=True, listOfVideos={'first': 'index', 'second': 'login', 'third': 'registration'})
 
 
 @app.route('/login', methods=['post', 'get'])
@@ -89,6 +94,11 @@ def registration():
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html', session=True)
+
+@app.route('/403')
+@app.errorhandler(403)
+def page_not_found():
+    return render_template('403.html', session=True)
 
 
 @app.route('/about-us')
