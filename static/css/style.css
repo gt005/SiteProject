@@ -3,14 +3,6 @@ body {
 
 }
 
-.navbar-light .navbar-nav .nav-link {
-  color: #C8D4E5;
-}
-
-.navbar-light:hover .navbar-nav:hover .nav-link:hover {
-  color: #98A1AD !important;
-}
-
 sign-up-button.button {
   background: none;
   border: 0px;
@@ -97,6 +89,53 @@ sign-up-button.button {
   text-decoration: none;
 }
 
+.page-404-text {
+  color: red;
+}
+
+.content_title {
+  padding-top: 20px;
+  padding-left: 0px;
+}
+
+
+.VideoContent {
+  display: block;
+  top: 50%;
+  left: 70%;
+}
+
+.listVideo {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-around;
+  height: 100%;
+  
+}
+
+.listVideoElement {
+  width: 40%;
+  height: 40%;
+  display: block;
+  margin: 10px;
+}
+
+.video-content-element {
+  text-decoration: none;
+  color: #4D6FBB;
+}
+
+.video-content-element:hover {
+  text-decoration: none;
+}
+.navbar-light .navbar-nav .nav-link {
+  color: #C8D4E5;
+}
+
+.navbar-light:hover .navbar-nav:hover .nav-link:hover {
+  color: #98A1AD !important;
+}
+
 .nav-link {
   color: #ff9027;
 }
@@ -119,15 +158,6 @@ sign-up-button.button {
   transform: scale(1.2);
 }
 
-.page-404-text {
-  color: red;
-}
-
-.content_title {
-  padding-top: 20px;
-  padding-left: 0px;
-}
-
 .navbar-nav {
   padding-left: 50px;
 }
@@ -142,4 +172,8 @@ sign-up-button.button {
 
 .form-control {
   border-radius: .4rem;
+}
+
+.navbar {
+  padding-left: 0;
 }

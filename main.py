@@ -42,7 +42,7 @@ def accessing_the_database(query, changes=False):
 
 @app.route('/')
 def index():
-    return render_template('index.html', session=True, listOfVideos={'first': 'index', 'second': 'login', 'third': 'registration'})
+    return render_template('index.html', session=True)
 
 
 @app.route('/login', methods=['post', 'get'])
@@ -108,7 +108,10 @@ def about_us():
 
 @app.route('/videos')
 def videos():
-    return render_template('videos.html', session=True)
+    return render_template('videos.html', session=True, listOfVideos={
+        '1': 'index', '2': 'login', '3': 'registration',
+        '4': 'login', '5': 'login', '6': 'login',
+        '7': 'login', '8': 'login', '9': 'login'})
 
 
 if __name__ == "__main__":

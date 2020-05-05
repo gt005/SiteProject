@@ -1,0 +1,49 @@
+.navbar-light .navbar-nav .nav-link {
+  color: #C8D4E5;
+}
+
+.navbar-light:hover .navbar-nav:hover .nav-link:hover {
+  color: #98A1AD !important;
+}
+
+.nav-link {
+  color: #ff9027;
+}
+
+.nav-item {
+  transition: 0.25s;
+}
+
+.nav-item:hover {
+  transform: scale(1.2);
+}
+
+.navbar-brand {
+  font-size: 1.6rem;
+  transition: 0.25s;
+  color: #FFD10F !important;
+}
+
+.navbar-brand:hover {
+  transform: scale(1.2);
+}
+
+.navbar-nav {
+  padding-left: 50px;
+}
+
+.bg-light {
+  background-color: #4D6FBB !important;
+}
+
+.btn-outline-success {
+  color: white;
+}
+
+.form-control {
+  border-radius: .4rem;
+}
+
+.navbar {
+  padding-left: 0;
+}
