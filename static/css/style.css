@@ -1,6 +1,6 @@
 body {
   background-color: white;
-
+  padding-left: 0;
 }
 
 sign-up-button.button {
@@ -128,6 +128,8 @@ sign-up-button.button {
 .video-content-element:hover {
   text-decoration: none;
 }
+
+
 .navbar-light .navbar-nav .nav-link {
   color: #C8D4E5;
 }
@@ -172,8 +174,4 @@ sign-up-button.button {
 
 .form-control {
   border-radius: .4rem;
-}
-
-.navbar {
-  padding-left: 0;
 }
