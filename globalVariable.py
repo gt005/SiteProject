@@ -12,3 +12,5 @@ PASSWORD_FORM = '''Password form:
 1) Use only latin character, numbers and symbol '_' 
 2) Max length - 15
 3) Min length - 5'''
+
+SECRET_KEY = "BsKdQOcKBGAiScVZHkWovfitWBDEwIwi"

@@ -1,5 +1,6 @@
 body {
   background-color: white;
+  
 }
 
 img {
@@ -113,16 +114,18 @@ sign-up-button.button {
   flex-wrap: wrap;
   align-content: space-around;
   height: 100%;
+  left: 50%;
   padding-left: 0;
   padding-right: 0;
-  transform: translateX(8%);
+  transform: translateX(6%);
 }
 
 .listVideoElement {
   width: 40%;
   height: 40%;
   display: block;
-  margin: 0px;
+  margin: 20px;
+  background-color: #DBDBDB;
 }
 
 .video-content-element {
@@ -181,3 +184,13 @@ sign-up-button.button {
 .form-control {
   border-radius: .4rem;
 }
+
+.video-preview {
+  position: relative;
+  left: 10%;
+  top: 0%;
+
+}
+
+
+

@@ -1,4 +1,4 @@
-from flask import Flask, request, g, abort, render_template, url_for, redirect, make_response
+from flask import Flask, request, g, abort, render_template, url_for, redirect, make_response, session
 from globalVariable import *
 from app import app
 import bcrypt
@@ -40,15 +40,20 @@ def accessing_the_database(query, changes=False):
     return db_cursor.fetchall()
 
 
+def setting_session():
+    pass
+
+
 @app.route('/')
 def index():
-    return render_template('index.html', session=True)
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['post', 'get'])
 def login():
     message = ''  # Для вывода предупреждений в форме
     if request.method == 'POST':
+        session.permanent = True
         username = str(request.form.get('username'))
         password = str(request.form.get('password'))
         if not username and password:
@@ -60,10 +65,11 @@ def login():
         else:
             result = accessing_the_database(QUERY_COMMANDS['get_password'] % username)
             if bcrypt.checkpw(bytes(password, encoding='utf-8'), result[0][0]):
+                session['user'] = username
                 return redirect(url_for('index'))  # TODO: Генерировать тут сессию
             else:
                 message = 'Wrong password.'
-    return render_template('login.html', message=message, session=True)
+    return render_template('login.html', message=message)
 
 
 @app.route('/registration', methods=['post', 'get'])
@@ -87,31 +93,44 @@ def registration():
             accessing_the_database(QUERY_COMMANDS['add_user'] \
             % (username, bcrypt.hashpw(bytes(password, encoding='utf-8'),
                         bcrypt.gensalt()).decode('utf-8')), changes=True)
+            session['user'] = username
             return redirect(url_for('index'))  # TODO: Генерировать тут сессию
-    return render_template('registration.html', message=message, session=True)
+    return render_template('registration.html', message=message)
 
 
 @app.errorhandler(404)
 def page_not_found(e):
-    return render_template('404.html', session=True)
+    return render_template('404.html')
 
-@app.route('/403')
 @app.errorhandler(403)
-def page_not_found():
-    return render_template('403.html', session=True)
+def have_no_permission(e):
+    return render_template('403.html')
 
 
 @app.route('/about-us')
 def about_us():
-    return render_template('about-us.html', session=True)
+    return render_template('about-us.html', name='')
 
 
 @app.route('/videos')
 def videos():
-    return render_template('videos.html', session=True, listOfVideos={
-        'Принял участие в конкурсе "Кто дольше простоит в планке)"': 'index', 'Еще видосик какой-то': 'login', '3': 'registration',
+    return render_template('videos.html', listOfVideos={
+        'Приaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 'index', 'Еще видосик какой-то': 'login', '3': 'registration',
         '4': 'login', '5': 'login', '6': 'login',
         '7': 'login', '8': 'login', '9': 'login'})
+
+
+@app.route('/profile')
+def profile():
+    if not 'user' in session:
+        abort(403)
+    return render_template('profile.html')
+
+
+@app.route('/logout')
+def logout():
+    session.pop("user", None)
+    return redirect(url_for('index'))
 
 
 if __name__ == "__main__":

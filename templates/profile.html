@@ -5,16 +5,9 @@
 {% endblock %}
 
 {% block title %}
-    Forbidden
+  {{ session['user'] }}
 {% endblock %}
-
 
 {% block content_title %}
- 	You don't have permission! 403. 
-{% endblock %}
-
-{% block content %}
-	<p>
-		<img class="image-403" src="../static/images/403page.jpg" alt="" style="left:50%;">
-	</p>
+	{{ session['user'] }}, It is your profile!
 {% endblock %}

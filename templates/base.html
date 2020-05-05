@@ -41,14 +41,6 @@
     }
   }
 </script>
-
-<script>
-    document.cookie = "foo=bar;";
-    if (!document.cookie)
-    {
-  alert("This website requires cookies to function properly");
-    }
-</script>
 <script src="../static/js/preloader.js" ></script>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="{{ url_for('index') }}">The Sun</a>
@@ -61,18 +53,23 @@
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('videos') }}"><i class="fa fa-video-camera" aria-hidden="true"></i> Videos</a>
       </li>
-      {% if not request.cookies.get('session') %}
+      {% if not 'user' in session %}
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('login') }}"><i class="fa fa-user" aria-hidden="true"></i> Sign in / Sign up</a>
         </li>
       {% else %}
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('index') }}"><i class="fa fa-user" aria-hidden="true"></i> Profile</a>
+          <a class="nav-link" href="{{ url_for('profile') }}"><i class="fa fa-user" aria-hidden="true"></i> {{ session['user'] }}</a>
         </li>
       {% endif %}
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('about_us') }}"><i class="fa fa-question" aria-hidden="true"></i></i> About us</a>
+        <a class="nav-link" href="{{ url_for('about_us') }}"><i class="fa fa-question" aria-hidden="true"></i> About us</a>
       </li>
+      {% if 'user' in session %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}"><i class="fa fa-sign-out" aria-hidden="true"></i> log out</a>
+        </li>
+      {% endif %}
     </ul>
     <form class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
