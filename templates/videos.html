@@ -16,6 +16,16 @@
 {% endblock %}
 
 {% block content %}
+<div class="list-group">
+  <a class="list-group-item list-group-item-action disabled" style="background-color: #4D6FBB;color:white;">
+    Category
+  </a>
+  <a href="#" class="list-group-item list-group-item-action">Sport</a>
+  <a href="#" class="list-group-item list-group-item-action">Creation</a>
+  <a href="#" class="list-group-item list-group-item-action">Study</a>
+  <a href="#" class="list-group-item list-group-item-action">Something else</a>
+</div>
+
 <div class="VideoContent">
 	<ul class="listVideo">
 	  {% for file_name in listOfVideos %}

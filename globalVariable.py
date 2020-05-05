@@ -4,7 +4,8 @@
 QUERY_COMMANDS = {
     'check_username': "select count(username) from users where username='%s';",
     'add_user': "insert into users (username, hashed_password) values ('%s', '%s');",
-    'get_password': "select hashed_password from users where username='%s';"
+    'get_password': "select hashed_password from users where username='%s';",
+    'get_user_role': "select role_type from users where username='%s';"
 }  # TODO: Дописать все команды
 
 

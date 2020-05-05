@@ -133,5 +133,12 @@ def logout():
     return redirect(url_for('index'))
 
 
+@app.route('/admin')
+def admin():
+    if not 'user' in session or \
+            not accessing_the_database(QUERY_COMMANDS['get_user_role'] % session['user'])[0][0] == 'admin':
+        abort(403)
+    return render_template('admin.html')
+
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
