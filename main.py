@@ -109,10 +109,10 @@ def about_us():
 @app.route('/videos')
 def videos():
     return render_template('videos.html', session=True, listOfVideos={
-        '1': 'index', '2': 'login', '3': 'registration',
+        'Принял участие в конкурсе "Кто дольше простоит в планке)"': 'index', 'Еще видосик какой-то': 'login', '3': 'registration',
         '4': 'login', '5': 'login', '6': 'login',
         '7': 'login', '8': 'login', '9': 'login'})
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -22,10 +22,8 @@
 	    <div class="listVideoElement">  
 	      <li style="list-style-type: none;">
 	        <a href="{{ url_for(listOfVideos[file_name])}}" class="video-content-element">  <!-- (file_path) open file in new window -->
-	          <img src="../static/images/403page.jpg" width="300" height="168" alt="">
-	          <p><span class="video-name-text">
-	          	{{ file_name }}
-	          </span></p>
+	          <img src="../static/images/403page.jpg" alt="">
+	          <p>{{ file_name }}</p>
 	        </a>
 	      </li>
 	    </div>

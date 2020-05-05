@@ -1,6 +1,10 @@
 body {
   background-color: white;
-  padding-left: 0;
+}
+
+img {
+    max-width: 80%;
+    height: auto;
 }
 
 sign-up-button.button {
@@ -101,8 +105,7 @@ sign-up-button.button {
 
 .VideoContent {
   display: block;
-  top: 50%;
-  left: 70%;
+  width: 100% !important;
 }
 
 .listVideo {
@@ -110,19 +113,22 @@ sign-up-button.button {
   flex-wrap: wrap;
   align-content: space-around;
   height: 100%;
-  
+  padding-left: 0;
+  padding-right: 0;
+  transform: translateX(8%);
 }
 
 .listVideoElement {
   width: 40%;
   height: 40%;
   display: block;
-  margin: 10px;
+  margin: 0px;
 }
 
 .video-content-element {
   text-decoration: none;
-  color: #4D6FBB;
+  color: black;
+  font-size: 1.5em;
 }
 
 .video-content-element:hover {

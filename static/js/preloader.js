@@ -1,9 +1,13 @@
 var loader = document.getElementById("page-preloader");
 document.body.onload = function(){
 	var timer = setInterval(function() {
-		loader.style.opacity -= 0.01;
-		if (loader.style.opacity == 0)
-			clearInterval(timer);
-			loader.style.visibility = 'hidden';
-	}, 100);
+		while (loader.style.opacity >= 0)
+		{
+			loader.style.opacity -= 0.01;
+		}	
+		
+
+		loader.style.visibility = 'hidden';
+		return;
+	}, 50);
 }
