@@ -202,11 +202,4 @@ sign-up-button.button {
   transform: translate(-50%, 15%);
 }
 
-.list-group {
-  position: fixed;
-  left: 2% !important;
-
-  width: 15%;
-}
-
 

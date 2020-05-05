@@ -109,7 +109,7 @@ def have_no_permission(e):
 
 @app.route('/about-us')
 def about_us():
-    return render_template('about-us.html', name='')
+    return render_template('about-us.html')
 
 
 @app.route('/videos')
@@ -139,6 +139,12 @@ def admin():
             not accessing_the_database(QUERY_COMMANDS['get_user_role'] % session['user'])[0][0] == 'admin':
         abort(403)
     return render_template('admin.html')
+
+
+@app.route('/news')
+def news():
+    return render_template('news.html')
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000, debug=True)
