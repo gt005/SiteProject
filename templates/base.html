@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/preloader.css', v=1)}}">
     <script src="https://kit.fontawesome.com/65f48fc481.js" crossorigin="anonymous"></script>
 
     {% block head %}
@@ -16,13 +17,39 @@
     </title>
 </head>
 <body>
-  <script>
+
+<div id="page-preloader" class="preloader">
+  <div class="eyes">
+    <div class="eye">
+      <div class="ball"></div>
+    </div>
+    <div class="eye">
+      <div class="ball"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var balls = document.getElementsByClassName("ball");
+  document.onmousemove = function() {
+    var x = event.clientX * 100 / window.innerWidth + "%";
+    var y = event.clientY * 100 / window.innerHeight + "%";
+    for(var i = 0; i < 2; ++i){
+      balls[i].style.left = x;
+      balls[i].style.top = y;
+      balls[i].style.transform = "translate(-"+x+",-"+y+")";
+    }
+  }
+</script>
+
+<script>
     document.cookie = "foo=bar;";
     if (!document.cookie)
     {
   alert("This website requires cookies to function properly");
     }
 </script>
+<script src="../static/js/preloader.js" ></script>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand" href="{{ url_for('index') }}">The Sun</a>
   
@@ -32,7 +59,7 @@
         <a class="nav-link" href="{{ url_for('index') }}"><i class="fa fa-home" aria-hidden="true"></i> Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#"><i class="fa fa-video-camera" aria-hidden="true"></i> Videos</a>
+        <a class="nav-link" href="{{ url_for('videos') }}"><i class="fa fa-video-camera" aria-hidden="true"></i> Videos</a>
       </li>
       {% if not request.cookies.get('session') %}
         <li class="nav-item">

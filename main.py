@@ -106,5 +106,10 @@ def about_us():
     return render_template('about-us.html', session=True)
 
 
+@app.route('/videos')
+def videos():
+    return render_template('videos.html', session=True)
+
+
 if __name__ == "__main__":
     app.run(debug=True)

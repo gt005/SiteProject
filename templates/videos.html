@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/style.css', v=1)}}">
+{% endblock %}
+
+{% block title %}
+  Videos
+{% endblock %}
+
+{% block content_title %}
+
+  <p>Popular videos</p>
+
+{% endblock %}
+
+{% block content %}
+<div class="VideoContent">
+	<ul class="listVideo">
+	  {% for file_name in listOfVideos %}
+	    <div class="listVideoElement">  
+	      <li>
+	        <a href="{{ url_for(listOfVideos[file_name])}}">  <!-- (file_path) open file in new window -->
+	          <img src="../static/images/403page.jpg" width="200" height="112" alt="">
+	          {{ file_name }}
+	        </a>
+	      </li>
+	    </div>
+	  {% endfor %}
+	</ul>
+</div>
+{% endblock %}
+

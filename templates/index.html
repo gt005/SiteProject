@@ -15,16 +15,5 @@
 {% endblock %}
 
 {% block content %}
-<ul class="listVideo">
-  {% for file_name in listOfVideos %}
-    <div class="listVideoElement">  
-      <li>
-        <a href="{{ url_for(listOfVideos[file_name])}}">  <!-- (file_path) open file in new window -->
-          <img src="../static/images/403page.jpg" alt="">
-          {{ file_name }}
-        </a>
-      </li>
-    </div>
-  {% endfor %}
-</ul>
+
 {% endblock %}
