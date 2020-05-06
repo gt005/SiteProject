@@ -14,11 +14,16 @@
 
 {% block content %}
 <div class="add-news">
+	{% if message %}
+		<div class="alert alert-success" role="alert">
+  			{{ message }}
+		</div>
+	{% endif %}
 	<form class="News-form" href='' method="POST">
 		<div class="input-group mb-3" style="width: 50%;">
   			<input type="text" maxlength="100" name='news_header' class="form-control"  placeholder="News header">
 		</div>
-		<h3><textarea style="width: 100%;" name="news_text" cols="30" rows="10" class="News-textarea" placeholder="Share some news!"></textarea></h3>
+		<h3><textarea style="width: 100%;" name="news_text" cols="30" rows="10" class="News-textarea" placeholder="Share some news!" maxlength="64000"></textarea></h3>
 		<input type="submit" value="Share!">
 	</form>
 </div>

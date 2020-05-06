@@ -13,3 +13,24 @@
 	News:
 
 {% endblock %}
+
+{% block content %}
+<div class="article-list-conteiner">
+	<ul class="article-list">
+		{% for article in article_list %}
+			<li class="aricle-element">
+				<h1 class="article-header">
+					{{ article.header }}
+				</h1>
+				<p><span class="article-text">
+					{{ article.text }}
+				</span></p>
+				<span class="publication-time">
+					{{ article.publication_time }}
+				</span>
+			</li>
+			<hr style="width: 100%;">
+		{% endfor %}
+	</ul>
+</div>
+{% endblock %}

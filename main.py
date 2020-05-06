@@ -1,12 +1,13 @@
 import os
 import re
+import hashlib
+import datetime
 from flask import Flask, request, g, abort, render_template, url_for, redirect, make_response, session
 from app import app
 import bcrypt
 import mysql.connector
 from werkzeug.utils import secure_filename
 from globalVariable import *
-import hashlib
 
 
 data_base = mysql.connector.connect(
@@ -33,6 +34,14 @@ class User():
 
 class File():
     pass
+
+
+class Article():
+    def __init__(self, *args):
+        self.id = args[0]
+        self.header = args[1]
+        self.text = args[2]
+        self.publication_time = args[3]
 
 
 def upload_file(file, upload_folder):
@@ -71,23 +80,26 @@ def queryToObject(function):
     # TODO: Придумать нормальное название
     def wrapper(query, *args, changes=False):
         ''' Превращает запрос к бд в объект запрашиваемого типа '''
-        if 'from users':
+        if 'from users' in query:
             type_of_object = User
-        elif 'from files':
+        elif 'from files' in query:
             type_of_object = File
-        query = query % args  # Вставляет в запрос переменные
-        db_answer = function(query=query, changes=changes)
+        elif 'from news' in query:
+            type_of_object = Article
+        db_answer = function(query=query, args=args, changes=changes)
         if not changes and db_answer:
             if len(db_answer) == 1:
                 return type_of_object(*(db_answer[0]))  # Формат ответа [(username, hashed_password......)]
             else:
-                return [type_of_object(*(db_answer[i])) for i in db_answer]
+                return [type_of_object(*(db_answer[i])) for i in range(len(db_answer))]
     return wrapper  # Возвращает значение wrapper
 
 
 @queryToObject  # Вызывая эту функцию(accessing_the_database), будет выполняться queryToObject
-def accessing_the_database(query, changes=False):
-    db_cursor.execute(query)  # Выполняет запрос
+def accessing_the_database(query, args, changes=False):
+    print(args)
+    print(query)
+    db_cursor.execute(query, args)  # Выполняет запрос
     if changes:
         data_base.commit()  # Подтверждает изменения в базе данных
         return None
@@ -112,12 +124,12 @@ def login():
         password = str(request.form.get('password'))
         if not username and password:
             message = 'Empty login or password.'
-        elif accessing_the_database(QUERY_COMMANDS['check_username'], username) is None:  # count(username)
+        elif accessing_the_database(QUERY_COMMANDS['get_user'], username) is None:  # count(username)
             message = 'User does not exist.'
         elif not all(verify_password_on_correct(username=username, password=password).values()):
             message = PASSWORD_FORM
         else:
-            result = accessing_the_database(QUERY_COMMANDS['get_password'], username).hashed_password
+            result = accessing_the_database(QUERY_COMMANDS['get_user'], username).hashed_password
             if bcrypt.checkpw(bytes(password, encoding='utf-8'), result):
                 session['user'] = username
                 return redirect(url_for('index'))
@@ -135,7 +147,7 @@ def registration():
         rep_password = str(request.form.get('rep_password'))
         if not username and password and rep_password:
             message = 'Empty login or one of passwords.'
-        elif accessing_the_database(QUERY_COMMANDS['check_username'], username) is not None:  # None, если нет таких пользователей
+        elif accessing_the_database(QUERY_COMMANDS['get_user'], username) is not None:  # None, если нет таких пользователей
             message = 'User with the same name already exist.'
         elif not all(verify_password_on_correct(
                 username=username, password=password,
@@ -192,7 +204,6 @@ def profile():
     else:
         file_name =  hashlib.md5(bytes(session['user'], encoding='utf-8')).hexdigest() + '.png'
     message = ''
-    print(request.method)
     if request.method == 'POST':
         if request.files:
             file = request.files['file']
@@ -212,20 +223,34 @@ def logout():
 @app.route('/admin', methods=['post', 'get'])
 def admin():
     if not 'user' in session or \
-            not accessing_the_database(QUERY_COMMANDS['get_user_role'], session['user']).role_type == 'admin':
+            not accessing_the_database(QUERY_COMMANDS['get_user'], session['user']).role_type == 'admin':
         # Проверяет, является ли человек админом, если нет, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
+    message = ''
     if request.method == 'POST':
         news_header = str(request.form.get('news_header'))
         news_text = str(request.form.get('news_text'))
+        publication_time = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        accessing_the_database(
+            QUERY_COMMANDS['create_news'], news_header,
+            news_text, publication_time, changes=True)
+        message = 'Successfully created an article.'
 
 
-    return render_template('admin.html')
+    return render_template('admin.html', message=message)
 
 
 @app.route('/news')
 def news():
-    return render_template('news.html')
+    articles = accessing_the_database(QUERY_COMMANDS['get_articles'])
+    if not isinstance(articles, list):  # Если вернулся один элемент, делаем список, чтобы при for не было ошибок
+        articles = [articles]
+    return render_template('news.html', article_list=articles[::-1])
+
+
+@app.route('/player')
+def player():
+    return render_template('video_player.html')
 
 
 if __name__ == "__main__":

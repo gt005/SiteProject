@@ -142,7 +142,7 @@ input[type="submit"]:hover {
 
 
 .navbar-light .navbar-nav .nav-link {
-  color: #375186;
+  color: #324B7C;
 }
 
 .navbar-light:hover .navbar-nav:hover .nav-link:hover {
@@ -256,7 +256,10 @@ input[type="submit"]:hover {
   left: 25%;
 }
 
-
+.article-list {
+  text-align: center;
+  list-style-type: none;
+}
 
 
 
