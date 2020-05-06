@@ -9,8 +9,18 @@
 {% endblock %}
 
 {% block content_title %}
-
-	Admin panel
-
+	<span style="position: absolute !important;left: 50%;transform: translateX(-50%) !important;">Admin panel</span>
 {% endblock %}
 
+{% block content %}
+<div class="add-news">
+	<form class="News-form" href='' method="POST">
+		<div class="input-group mb-3" style="width: 50%;">
+  			<input type="text" maxlength="100" name='news_header' class="form-control"  placeholder="News header">
+		</div>
+		<h3><textarea style="width: 100%;" name="news_text" cols="30" rows="10" class="News-textarea" placeholder="Share some news!"></textarea></h3>
+		<input type="submit" value="Share!">
+	</form>
+</div>
+<hr style="position: absolute;width: 100%;left:0px;size: 3px;color:red;">
+{% endblock %}

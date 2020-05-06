@@ -209,12 +209,17 @@ def logout():
     return redirect(url_for('index'))
 
 
-@app.route('/admin')
+@app.route('/admin', methods=['post', 'get'])
 def admin():
     if not 'user' in session or \
             not accessing_the_database(QUERY_COMMANDS['get_user_role'], session['user']).role_type == 'admin':
         # Проверяет, является ли человек админом, если нет, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
+    if request.method == 'POST':
+        news_header = str(request.form.get('news_header'))
+        news_text = str(request.form.get('news_text'))
+        
+
     return render_template('admin.html')
 
 
