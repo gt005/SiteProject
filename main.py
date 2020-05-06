@@ -39,7 +39,7 @@ def verify_password_on_correct(**verifiable):
         подходит ли строка или нет.
     """
     result = dict()
-    expression = re.compile(r'[a-zA-Z0-9_]{5,15}$')  # Сверяет разрешенные символы
+    expression = re.compile(r'[a-zA-Z0-9_]{5,15}$')  # Сверяет разрешенные символы и длину
     for key, element in verifiable.items():
         if expression.match(element):  # Проходит проверку или нет
             result[key] = True
