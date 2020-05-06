@@ -7,6 +7,7 @@ import mysql.connector
 
 
 data_base = mysql.connector.connect(
+    # Конфигурация моей базы данных, у тебя не будет работать, надо менять
     host='localhost',
     user='root',
     passwd='gt005gt005',
@@ -17,6 +18,7 @@ db_cursor = data_base.cursor()
 
 
 class User():
+    ''' Структура, которая содержет в себе свойства, например имя пользователя '''
     def __init__(self, *args):
         self.username = args[0]
         self.hashed_password = args[1]
@@ -31,15 +33,15 @@ class File():
 
 
 def verify_password_on_correct(**verifiable):
-    """ dict([str key: str element],) -> dict([str key: bool],)
-        Проверяет, нет ли в строке лишних символов.
+    """ Проверяет, нет ли в строке лишних символов.
+        dict([str key: str element],) -> dict([str key: bool],)
         В конце возвращает словарь, где каждому ключу соответвует занчение,
         подходит ли строка или нет.
     """
     result = dict()
-    expression = re.compile(r'[a-zA-Z0-9_]{5,15}$')
+    expression = re.compile(r'[a-zA-Z0-9_]{5,15}$')  # Сверяет разрешенные символы
     for key, element in verifiable.items():
-        if expression.match(element):
+        if expression.match(element):  # Проходит проверку или нет
             result[key] = True
         else:
             result[key] = False
@@ -54,20 +56,20 @@ def queryToObject(function):
             type_of_object = User
         elif 'from files':
             type_of_object = File
-        query = query % args
+        query = query % args  # Вставляет в запрос переменные
         db_answer = function(query=query, changes=changes)
         if not changes and db_answer:
-            return type_of_object(*(db_answer[0]))
-    return wrapper
+            return type_of_object(*(db_answer[0]))  # Формат ответа [(username, hashed_password......)]
+    return wrapper  # Возвращает значение wrapper
 
 
-@queryToObject
+@queryToObject  # Вызывая эту функцию(accessing_the_database), будет выполняться queryToObject
 def accessing_the_database(query, changes=False):
-    db_cursor.execute(query)
+    db_cursor.execute(query)  # Выполняет запрос
     if changes:
-        data_base.commit()
+        data_base.commit()  # Подтверждает изменения в базе данных
         return None
-    return db_cursor.fetchall()
+    return db_cursor.fetchall()  # Достает то, что вернул запрос
 
 
 def setting_session():
@@ -84,7 +86,7 @@ def login():
     message = ''  # Для вывода предупреждений в форме
     if request.method == 'POST':
         session.permanent = True
-        username = str(request.form.get('username'))
+        username = str(request.form.get('username'))   # Достает значения из формы по методу POST
         password = str(request.form.get('password'))
         if not username and password:
             message = 'Empty login or password.'
@@ -96,7 +98,7 @@ def login():
             result = accessing_the_database(QUERY_COMMANDS['get_password'], username).hashed_password
             if bcrypt.checkpw(bytes(password, encoding='utf-8'), result):
                 session['user'] = username
-                return redirect(url_for('index'))  # TODO: Генерировать тут сессию
+                return redirect(url_for('index'))
             else:
                 message = 'Wrong password.'
     return render_template('login.html', message=message)
@@ -106,23 +108,24 @@ def login():
 def registration():
     message = ''  # Для вывода предупреждений в форме
     if request.method == 'POST':
-        username = str(request.form.get('username'))
+        username = str(request.form.get('username'))  # Достает значения из формы по методу POST
         password = str(request.form.get('password'))
         rep_password = str(request.form.get('rep_password'))
         if not username and password and rep_password:
             message = 'Empty login or one of passwords.'
-        elif accessing_the_database(QUERY_COMMANDS['check_username'], username) is not None:  # count(username)
+        elif accessing_the_database(QUERY_COMMANDS['check_username'], username) is not None:  # None, если нет таких пользователей
             message = 'User with the same name already exist.'
         elif not all(verify_password_on_correct(
                 username=username, password=password,
                 rep_password=rep_password).values()):
+            # Если хоть один не проходит проверку функцией verify_password_on_correct
             message = PASSWORD_FORM
         elif rep_password != password:
             message = 'Passwords are not equal.'
         else:
             accessing_the_database(QUERY_COMMANDS['add_user'], username, bcrypt.hashpw(bytes(password, encoding='utf-8'), bcrypt.gensalt()).decode('utf-8'), changes=True)
-            session['user'] = username
-            return redirect(url_for('index'))  # TODO: Генерировать тут сессию
+            session['user'] = username  # Ставит cookie сессии
+            return redirect(url_for('index'))
     return render_template('registration.html', message=message)
 
 
@@ -142,6 +145,7 @@ def about_us():
 
 @app.route('/videos')
 def videos():
+    # Вместо этого словаря будет из базы данных брать данные
     return render_template('videos.html', listOfVideos={
         'Приaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 'index', 'Еще видосик какой-то': 'login', '3': 'registration',
         '4': 'login', '5': 'login', '6': 'login',
@@ -151,13 +155,14 @@ def videos():
 @app.route('/profile')
 def profile():
     if not 'user' in session:
+        # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
     return render_template('profile.html')
 
 
 @app.route('/logout')
 def logout():
-    session.pop("user", None)
+    session.pop("user", None)    # Удаляет cookie сессии
     return redirect(url_for('index'))
 
 
@@ -165,6 +170,7 @@ def logout():
 def admin():
     if not 'user' in session or \
             not accessing_the_database(QUERY_COMMANDS['get_user_role'], session['user']).role_type == 'admin':
+        # Проверяет, является ли человек админом, если нет, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
     return render_template('admin.html')
 
