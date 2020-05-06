@@ -48,7 +48,7 @@ def upload_file(file, upload_folder):
 
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_IMAGE_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
 
 
 def verify_password_on_correct(**verifiable):
@@ -192,9 +192,11 @@ def profile():
     else:
         file_name =  hashlib.md5(bytes(session['user'], encoding='utf-8')).hexdigest() + '.png'
     message = ''
+    print(request.method)
     if request.method == 'POST':
-        file = request.files['file']
-        message = upload_file(file, UPLOAD_FOLDER_FOR_PROFILE_IMAGE)
+        if request.files:
+            file = request.files['file']
+            message = upload_file(file, UPLOAD_FOLDER_FOR_PROFILE_IMAGE)
     if not 'user' in session:
         # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)

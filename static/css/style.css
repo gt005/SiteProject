@@ -205,10 +205,10 @@ sign-up-button.button {
 .profile-image-conteiner {
   display: block;
   width: 30%;
-  position: absolute;
-  left: 2%;
+  position: relative;
+  left: -5%;
   top: 20%;
-  margin: 0 auto;
+  transform: translateY(23%);
 }
 
 .profile-image {
@@ -224,7 +224,6 @@ sign-up-button.button {
 
 .profile-image-box {
     width: 90%;
-    padding: ;
     position: relative;
     top: 80%;
     left: 50%;
