@@ -152,8 +152,18 @@ def videos():
         '7': 'login', '8': 'login', '9': 'login'})
 
 
+@app.route('/videos/category/<category>')  # Вместо <> подставится значение, оно же передастся в функцию
+def watch_category(category):
+    return render_template('videos.html', listOfVideos={
+        'Приaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 'index',
+        'Еще видосик какой-то': 'login', '3': 'registration',
+        '4': 'login', '5': 'login', '6': 'login',
+        '7': 'login', '8': 'login', '9': 'login'})
+
+
 @app.route('/profile')
 def profile():
+
     if not 'user' in session:
         # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)

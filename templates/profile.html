@@ -11,3 +11,12 @@
 {% block content_title %}
 	{{ session['user'] }}, It is your profile!
 {% endblock %}
+
+{% block content %}
+Here you can change your profile picture
+<form class="box" action="#" method="post">
+	  <input type="file" accept="image/*" class="custom-file-input" id="customFile">
+	  <label class="custom-file-label" for="customFile">Choose file</label>
+	  <input type="submit" value='Change'>
+</form>
+{% endblock %}
