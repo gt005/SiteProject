@@ -218,7 +218,7 @@ def admin():
     if request.method == 'POST':
         news_header = str(request.form.get('news_header'))
         news_text = str(request.form.get('news_text'))
-        
+
 
     return render_template('admin.html')
 

@@ -142,11 +142,11 @@ input[type="submit"]:hover {
 
 
 .navbar-light .navbar-nav .nav-link {
-  color: #C8D4E5;
+  color: #375186;
 }
 
 .navbar-light:hover .navbar-nav:hover .nav-link:hover {
-  color: #98A1AD !important;
+  color: #293C62 !important;
 }
 
 .nav-link {
@@ -178,7 +178,7 @@ input[type="submit"]:hover {
 }
 
 .bg-light {
-  background-color: #4D6FBB !important;
+  background-color: #75c3f3 !important;
 }
 
 .btn-outline-success {
