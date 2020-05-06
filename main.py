@@ -16,6 +16,20 @@ data_base = mysql.connector.connect(
 db_cursor = data_base.cursor()
 
 
+class User():
+    def __init__(self, *args):
+        self.username = args[0]
+        self.hashed_password = args[1]
+        self.rating_sport = args[2]
+        self.rating_creation = args[3]
+        self.rating_study = args[4]
+        self.role_type = args[5]
+
+
+class File():
+    pass
+
+
 def verify_password_on_correct(**verifiable):
     """ dict([str key: str element],) -> dict([str key: bool],)
         Проверяет, нет ли в строке лишних символов.
@@ -32,6 +46,22 @@ def verify_password_on_correct(**verifiable):
     return result
 
 
+def queryToObject(function):
+    # TODO: Придумать нормальное название
+    def wrapper(query, *args, changes=False):
+        ''' Превращает запрос к бд в объект запрашиваемого типа '''
+        if 'from users':
+            type_of_object = User
+        elif 'from files':
+            type_of_object = File
+        query = query % args
+        db_answer = function(query=query, changes=changes)
+        if not changes and db_answer:
+            return type_of_object(*(db_answer[0]))
+    return wrapper
+
+
+@queryToObject
 def accessing_the_database(query, changes=False):
     db_cursor.execute(query)
     if changes:
@@ -58,13 +88,13 @@ def login():
         password = str(request.form.get('password'))
         if not username and password:
             message = 'Empty login or password.'
-        elif accessing_the_database(QUERY_COMMANDS['check_username'] % username)[0][0] == 0:  # count(username)
+        elif accessing_the_database(QUERY_COMMANDS['check_username'], username) is None:  # count(username)
             message = 'User does not exist.'
         elif not all(verify_password_on_correct(username=username, password=password).values()):
             message = PASSWORD_FORM
         else:
-            result = accessing_the_database(QUERY_COMMANDS['get_password'] % username)
-            if bcrypt.checkpw(bytes(password, encoding='utf-8'), result[0][0]):
+            result = accessing_the_database(QUERY_COMMANDS['get_password'], username).hashed_password
+            if bcrypt.checkpw(bytes(password, encoding='utf-8'), result):
                 session['user'] = username
                 return redirect(url_for('index'))  # TODO: Генерировать тут сессию
             else:
@@ -81,7 +111,7 @@ def registration():
         rep_password = str(request.form.get('rep_password'))
         if not username and password and rep_password:
             message = 'Empty login or one of passwords.'
-        elif accessing_the_database(QUERY_COMMANDS['check_username'] % username)[0][0] != 0:  # count(username)
+        elif accessing_the_database(QUERY_COMMANDS['check_username'], username) is not None:  # count(username)
             message = 'User with the same name already exist.'
         elif not all(verify_password_on_correct(
                 username=username, password=password,
@@ -90,9 +120,7 @@ def registration():
         elif rep_password != password:
             message = 'Passwords are not equal.'
         else:
-            accessing_the_database(QUERY_COMMANDS['add_user'] \
-            % (username, bcrypt.hashpw(bytes(password, encoding='utf-8'),
-                        bcrypt.gensalt()).decode('utf-8')), changes=True)
+            accessing_the_database(QUERY_COMMANDS['add_user'], username, bcrypt.hashpw(bytes(password, encoding='utf-8'), bcrypt.gensalt()).decode('utf-8'), changes=True)
             session['user'] = username
             return redirect(url_for('index'))  # TODO: Генерировать тут сессию
     return render_template('registration.html', message=message)
@@ -136,7 +164,7 @@ def logout():
 @app.route('/admin')
 def admin():
     if not 'user' in session or \
-            not accessing_the_database(QUERY_COMMANDS['get_user_role'] % session['user'])[0][0] == 'admin':
+            not accessing_the_database(QUERY_COMMANDS['get_user_role'], session['user']).role_type == 'admin':
         abort(403)
     return render_template('admin.html')
 
