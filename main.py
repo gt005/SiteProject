@@ -1,9 +1,12 @@
+import os
+import re
 from flask import Flask, request, g, abort, render_template, url_for, redirect, make_response, session
-from globalVariable import *
 from app import app
 import bcrypt
-import re
 import mysql.connector
+from werkzeug.utils import secure_filename
+from globalVariable import *
+import hashlib
 
 
 data_base = mysql.connector.connect(
@@ -30,6 +33,22 @@ class User():
 
 class File():
     pass
+
+
+def upload_file(file, upload_folder):
+    if not file:
+        return 'Choose a file.'
+    if not allowed_file(file.filename):
+        return 'Invalid file name.'
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(upload_folder, hashlib.md5(bytes(session['user'], encoding='utf-8')).hexdigest() + '.png'))
+        return 'Success'
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_IMAGE_EXTENSIONS
 
 
 def verify_password_on_correct(**verifiable):
@@ -59,7 +78,10 @@ def queryToObject(function):
         query = query % args  # Вставляет в запрос переменные
         db_answer = function(query=query, changes=changes)
         if not changes and db_answer:
-            return type_of_object(*(db_answer[0]))  # Формат ответа [(username, hashed_password......)]
+            if len(db_answer) == 1:
+                return type_of_object(*(db_answer[0]))  # Формат ответа [(username, hashed_password......)]
+            else:
+                return [type_of_object(*(db_answer[i])) for i in db_answer]
     return wrapper  # Возвращает значение wrapper
 
 
@@ -161,13 +183,22 @@ def watch_category(category):
         '7': 'login', '8': 'login', '9': 'login'})
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['post', 'get'])
 def profile():
-
+    file_path = os.path.join(UPLOAD_FOLDER_FOR_PROFILE_IMAGE, hashlib.md5(  # Путь к аватарке
+        bytes(session['user'], encoding='utf-8')).hexdigest() + '.png')
+    if not os.path.exists(file_path):   #  Если аватарки нет, то выводить стандартную
+        file_name = 'standard_image.png'
+    else:
+        file_name =  hashlib.md5(bytes(session['user'], encoding='utf-8')).hexdigest() + '.png'
+    message = ''
+    if request.method == 'POST':
+        file = request.files['file']
+        message = upload_file(file, UPLOAD_FOLDER_FOR_PROFILE_IMAGE)
     if not 'user' in session:
         # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
-    return render_template('profile.html')
+    return render_template('profile.html', message=message, file_name=file_name)
 
 
 @app.route('/logout')

@@ -202,4 +202,39 @@ sign-up-button.button {
   transform: translate(-50%, 15%);
 }
 
+.profile-image-conteiner {
+  display: block;
+  width: 30%;
+  position: absolute;
+  left: 2%;
+  top: 20%;
+  margin: 0 auto;
+}
+
+.profile-image {
+  width: 100%;
+  border: 2px solid black;
+  position: relative;
+  height: auto;
+  left: 50%;
+  top: 10%;
+  transform: translate(-50%, 0%);
+  margin-bottom: 2ex;
+}
+
+.profile-image-box {
+    width: 90%;
+    padding: ;
+    position: relative;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, 30%);
+    background: none;
+    text-align: center;
+    justify-content: center;
+}
+
+
+
+
 

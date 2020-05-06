@@ -15,3 +15,9 @@ PASSWORD_FORM = '''Password form:
 3) Min length - 5'''
 
 SECRET_KEY = "BsKdQOcKBGAiScVZHkWovfitWBDEwIwi"
+
+ALLOWED_IMAGE_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+
+ALLOWED_VIDEO_EXTENSIONS = set(['mp4'])
+
+UPLOAD_FOLDER_FOR_PROFILE_IMAGE = '/Users/karimhamid/PycharmProjects/SiteProject/flask_app/static/images/profile_photos/'

@@ -9,14 +9,29 @@
 {% endblock %}
 
 {% block content_title %}
-	{{ session['user'] }}, It is your profile!
+<span style="position: absolute !important;left: 50%;transform: translateX(-50%) !important;">{{ session['user'] }}, It is your profile!</span>
+	
 {% endblock %}
 
 {% block content %}
-Here you can change your profile picture
-<form class="box" action="#" method="post">
-	  <input type="file" accept="image/*" class="custom-file-input" id="customFile">
-	  <label class="custom-file-label" for="customFile">Choose file</label>
-	  <input type="submit" value='Change'>
+<div class="profile-image-conteiner">
+	<img src="../static/images/profile_photos/{{ file_name }}" alt="" class="profile-image">
+	{% if message == "Success" %}
+		<div class="alert alert-success" role="alert">
+  			Profile photo successfully updated! Reload page to see changes!
+		</div>
+  	{% elif message %}
+  		<div class="alert alert-danger" role="alert">
+  			{{ message}}
+  		</div>
+	{% endif %}
+	<p style="text-align: center;">Here you can change your profile picture</p>
+	<form class="box" action="#" method="post" enctype="multipart/form-data">
+	<input type="file" name="file" multiple accept="image/*,image/jpeg" class="custom-file-input" id="customFile">
+	<label class="custom-file-label" for="customFile">Choose file</label>
+	<input type="submit" value='Change'>
 </form>
+</div>
+
+
 {% endblock %}
