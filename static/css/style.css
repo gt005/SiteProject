@@ -149,9 +149,7 @@ input[type="submit"]:hover {
   color: #293C62 !important;
 }
 
-.nav-link {
-  color: #ff9027;
-}
+
 
 .nav-item {
   transition: 0.25s;
@@ -263,6 +261,15 @@ input[type="submit"]:hover {
   height: 100%;
   left: 50%;
 }
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  background-color: #75c3f3;
+}
+
+.scoreboard-element {
+  width: 100%;
+}
+
 
 
 

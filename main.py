@@ -32,10 +32,6 @@ class User():
         self.role_type = args[5]
 
 
-    def __repr__(self):
-        return f"{self.username} {self.hashed_password} {self.role_type}"
-
-
 class File():
     pass
 
@@ -176,7 +172,20 @@ def have_no_permission(e):
 
 @app.route('/scoreboard')
 def scoreboard():
-    return render_template('scoreboard.html')
+    user_in_scoreboard_sport = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_sport')
+    user_in_scoreboard_creation = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_creation')
+    user_in_scoreboard_study = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_study')
+    print(user_in_scoreboard_sport)
+    print(user_in_scoreboard_creation)
+    print(user_in_scoreboard_study)
+    if not isinstance(user_in_scoreboard_sport, list):
+        user_in_scoreboard_study = [user_in_scoreboard_study]
+        user_in_scoreboard_sport = [user_in_scoreboard_sport]
+        user_in_scoreboard_creation = [user_in_scoreboard_creation]
+    return render_template('scoreboard.html',
+                           user_in_scoreboard_sport=sorted(user_in_scoreboard_sport, key=lambda x: -x.rating_sport),
+                           user_in_scoreboard_creation=sorted(user_in_scoreboard_creation, key=lambda x: -x.rating_creation),
+                           user_in_scoreboard_study=sorted(user_in_scoreboard_study, key=lambda x: -x.rating_study))
 
 
 @app.route('/videos')

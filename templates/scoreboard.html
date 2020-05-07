@@ -5,49 +5,78 @@
 {% endblock %}
 
 {% block title %}
-    About us
+    Scoreboard
 {% endblock %}
 
 {% block content_title %}
-	Поговорим немного о нас.
+	Scoreboard:
 {% endblock %}
 
 {% block content %}
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
-	Много бла бла бла бла бла бла
+<div class="scoreboard-tables">
+	<ul class="nav nav-pills" role="tablist">
+	  <li class="nav-item active">
+	    <a class="nav-link active" role="tab" data-toggle="tab" href="#Sport">Sport</a>
+	  </li>
+	  <li class="nav-item">
+	    <a class="nav-link" role="tab" data-toggle="tab" href="#Creation">Creation</a>
+	  </li>
+	  <li class="nav-item">
+	    <a class="nav-link" role="tab" data-toggle="tab" href="#Study">Study</a>
+	  </li>
+	</ul>
+	<br>
+	<div class="tab-content">
+		<div role="tabpanel" class="tab-pane active" id="Sport">
+			<ol style="width: 100%;">
+			{% for sport_user in user_in_scoreboard_sport %}
+				<li class="scoreboard-element" style="text-align: center;">
+					<span style="padding-right: 5%;">
+						{{ sport_user.username }}
+					</span>
+					<span>
+						{{ sport_user.rating_sport }} points
+					</span>
+				</li>
+				<hr style="width: 100%;">
+			{% endfor %}
+			</ol>
+		</div>
+
+		<div role="tabpanel" class="tab-pane" id="Creation">
+			<ol style="width: 100%;">
+			{% for creation_user in user_in_scoreboard_creation %}
+				<li class="scoreboard-element" style="text-align: center;">
+					<span style="padding-right: 5%;">
+						{{ creation_user.username }}
+					</span>
+					<span>
+						{{ creation_user.rating_creation }} points
+					</span>
+				</li>
+				<hr style="width: 100%;">
+			{% endfor %}
+			</ol>
+		</div>
+
+		<div role="tabpanel" class="tab-pane" id="Study">
+			<ol style="width: 100%;">
+			{% for study_user in user_in_scoreboard_study %}
+				<li class="scoreboard-element" style="text-align: center;">
+					<span style="padding-right: 5%;">
+						{{ study_user.username }}
+					</span>
+					<span>
+						{{ study_user.rating_study }} points
+					</span>
+				</li>
+				<hr style="width: 100%;">
+			{% endfor %}
+			</ol>
+		</div>
+	</div>
+</div>
+
+
 	
 {% endblock %}
