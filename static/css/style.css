@@ -257,15 +257,14 @@ input[type="submit"]:hover {
   list-style-type: none;
 }
 
-.users-settings {
-  position: relative;
-  width: 100%;
-  height: 80%;
-  left: 0%;
-  top: 20%;
-  margin-top: 50px;
-  text-align: center;
-  
+.print-user {
+  margin: 2ex;
+  display: block ruby;
+  height: 100%;
+  left: 50%;
 }
+
+
+
 
 

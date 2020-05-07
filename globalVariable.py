@@ -2,6 +2,9 @@
 
 QUERY_COMMANDS = {
     'get_user': "select * from users where username=%s;",
+    'get_several_users': "select * from users where username like %s and username != %s;",
+    'delete_user': "delete from users where username=%s;",
+    'change_to_admin': "update users set role_type='admin' where username=%s;",
     'add_user': "insert into users (username, hashed_password) values (%s, %s);",
     'get_all_files': "select * from files;",
     'get_file_with_category': "select * from files where category=%s;",
@@ -12,7 +15,7 @@ QUERY_COMMANDS = {
 PASSWORD_FORM = '''Password form: 
 1) Use only latin character, numbers and symbol '_' 
 2) Max length - 15
-3) Min length - 5'''
+3) Min length - 3'''
 
 SECRET_KEY = "BsKdQOcKBGAiScVZHkWovfitWBDEwIwi"
 

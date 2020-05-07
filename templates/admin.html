@@ -33,11 +33,37 @@
 <hr style="position: absolute;width: 100%;left:0px;">
 <hr style="position: absolute;width: 100%;left:0px;">
 <div class="add-news">
-	<form class="News-form" href='' method="POST">
-		<h2>Users settings</h2>
-		<input type="text" maxlength="100" name='search-username' class="form-control"  placeholder="Input username to find user">
-		<input type="submit" name="find-user" value="Find">
-	</form>
+	<h2>Users settings</h2>
+		{% if message_to_the_users_search %}
+			<div class="alert alert-danger" role="alert">
+  			{{ message_to_the_users_search }}
+			</div>
+		{% endif %}
+		<form class="News-form" href='' method="POST">
+			<input type="text" maxlength="100" name='search-username' class="form-control"  placeholder="Input username to find user">
+			<input type="submit" name="find-user" value="Find">
+		</form>
+	{% if user %}
+		<div class="print-user">
+			{% for i in user %}
+				<div class="dropdown" style="padding-bottom: 2ex; width: 30%;text-align: center;">
+				  <button style="background-color: #75c3f3;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				    <span style="font-size: 1.2em;color: #4D6FBB;">{{ i.username }}</span>
+				  </button>
+				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+				    <a class="dropdown-item" href="{{ url_for('admin', command='delete', user=i.username) }}">Delete user</a>
+				    <hr style="padding: 0;margin:0;">
+				    <a class="dropdown-item" href="{{ url_for('admin', command='change_role', user=i.username) }}" style="color:red;">Change role to admin</a>
+				    <hr style="padding: 0;margin:0;">
+				    <a class="dropdown-item disabled" href="" style="color: #75c3f3;">{{ i.role_type }}</a>
+				  </div>
+				</div>
+  			{% endfor %}
+		</div>
+	{% endif %}
 </div>
+<hr style="position: absolute;width: 100%;left:0px;">
 {% endblock %}
+
+
 

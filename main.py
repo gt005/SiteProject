@@ -32,6 +32,10 @@ class User():
         self.role_type = args[5]
 
 
+    def __repr__(self):
+        return f"{self.username} {self.hashed_password} {self.role_type}"
+
+
 class File():
     pass
 
@@ -67,7 +71,7 @@ def verify_password_on_correct(**verifiable):
         подходит ли строка или нет.
     """
     result = dict()
-    expression = re.compile(r'[a-zA-Z0-9_]{5,15}$')  # Сверяет разрешенные символы и длину
+    expression = re.compile(r'[a-zA-Z0-9_]{3,15}$')  # Сверяет разрешенные символы и длину
     for key, element in verifiable.items():
         if expression.match(element):  # Проходит проверку или нет
             result[key] = True
@@ -170,9 +174,9 @@ def have_no_permission(e):
     return render_template('403.html')
 
 
-@app.route('/about-us')
-def about_us():
-    return render_template('about-us.html')
+@app.route('/scoreboard')
+def scoreboard():
+    return render_template('scoreboard.html')
 
 
 @app.route('/videos')
@@ -219,12 +223,14 @@ def logout():
 
 
 @app.route('/admin', methods=['post', 'get'])
-def admin():
+def admin(command=None, user=None):
     if not 'user' in session or \
             not accessing_the_database(QUERY_COMMANDS['get_user'], session['user']).role_type == 'admin':
         # Проверяет, является ли человек админом, если нет, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
     message = ''
+    user = ''
+    message_to_the_users_search = ''
     if request.method == 'POST':
         if request.form.get('add-news'):
             news_header = str(request.form.get('news_header'))
@@ -238,10 +244,23 @@ def admin():
                     news_text, publication_time, changes=True)
                 message = 'Successfully created an article.'
         elif request.form.get('find-user'):
-            pass
-
-
-    return render_template('admin.html', message=message)
+            user = request.form.get('search-username')
+            if not user:
+                message_to_the_users_search = 'Empty username'
+            else:
+                user = accessing_the_database(QUERY_COMMANDS['get_several_users'], user + '%', session['user'])
+                if not isinstance(user, list) and user is not None:
+                    user = [user]
+                if user is None:
+                    message_to_the_users_search = 'Users not found'
+    elif request.args.get('command') == 'delete' and request.args['user']:
+        accessing_the_database(QUERY_COMMANDS['delete_user'], request.args['user'], changes=True)
+        message_to_the_users_search = 'Successfully deleted'
+        return redirect(url_for('admin'))
+    elif request.args.get('command') == 'change_role' and request.args['user']:
+        accessing_the_database(QUERY_COMMANDS['change_to_admin'], request.args['user'], changes=True)
+        return redirect(url_for('admin'))
+    return render_template('admin.html', message=message, message_to_the_users_search=message_to_the_users_search, user=user)
 
 
 @app.route('/news')
