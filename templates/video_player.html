@@ -10,5 +10,11 @@
 {% endblock %}
 
 {% block content %}
-  <video src="../static/videos/test2.mp4" width="60%" height="40%" poster="poster.gif" controls />
+  <div class="video-window">
+    <video src="../static/videos/test2.mp4" class="opened-video" width="100%" height="100%" poster="poster.gif" controls></video>
+    <h1>
+      {{ video_name }}
+    </h1>
+  </div>
+  <hr style="position: absolute;top:120%;width: 100%;left:0px;">
 {% endblock %}

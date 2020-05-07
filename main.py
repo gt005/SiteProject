@@ -280,9 +280,9 @@ def news():
     return render_template('news.html', article_list=articles[::-1])
 
 
-@app.route('/player')
-def player():
-    return render_template('video_player.html')
+@app.route('/video_player')
+def video_player():
+    return render_template('video_player.html', video_name="Приключения кота и его подруги!")
 
 
 if __name__ == "__main__":
