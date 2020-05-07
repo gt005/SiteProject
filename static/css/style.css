@@ -252,15 +252,20 @@ input[type="submit"]:hover {
   
 }
 
-.input-group {
-  left: 25%;
-}
-
 .article-list {
   text-align: center;
   list-style-type: none;
 }
 
-
+.users-settings {
+  position: relative;
+  width: 100%;
+  height: 80%;
+  left: 0%;
+  top: 20%;
+  margin-top: 50px;
+  text-align: center;
+  
+}
 
 

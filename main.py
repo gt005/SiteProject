@@ -97,8 +97,6 @@ def queryToObject(function):
 
 @queryToObject  # Вызывая эту функцию(accessing_the_database), будет выполняться queryToObject
 def accessing_the_database(query, args, changes=False):
-    print(args)
-    print(query)
     db_cursor.execute(query, args)  # Выполняет запрос
     if changes:
         data_base.commit()  # Подтверждает изменения в базе данных
