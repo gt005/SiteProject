@@ -226,13 +226,19 @@ def admin():
         abort(403)
     message = ''
     if request.method == 'POST':
-        news_header = str(request.form.get('news_header'))
-        news_text = str(request.form.get('news_text'))
-        publication_time = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-        accessing_the_database(
-            QUERY_COMMANDS['create_news'], news_header,
-            news_text, publication_time, changes=True)
-        message = 'Successfully created an article.'
+        if request.form.get('add-news'):
+            news_header = str(request.form.get('news_header'))
+            news_text = str(request.form.get('news_text'))
+            if not (news_header and news_text):
+                message = 'Empty header or text'
+            else:
+                publication_time = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                accessing_the_database(
+                    QUERY_COMMANDS['create_news'], news_header,
+                    news_text, publication_time, changes=True)
+                message = 'Successfully created an article.'
+        elif request.form.get('find-user'):
+            pass
 
 
     return render_template('admin.html', message=message)

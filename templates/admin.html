@@ -15,22 +15,29 @@
 {% block content %}
 <div class="add-news">
 	<h2>Creating news</h2>
-	{% if message %}
+	{% if message.startswith('Success') %}
 		<div class="alert alert-success" role="alert">
+  			{{ message }}
+		</div>
+	{% elif message %}
+		<div class="alert alert-danger" role="alert">
   			{{ message }}
 		</div>
 	{% endif %}
 	<form class="News-form" href='' method="POST">
   		<input type="text" maxlength="100" name='news_header' class="form-control"  placeholder="News header">
 		<h3><textarea style="width: 100%;" name="news_text" cols="30" rows="10" class="News-textarea" placeholder="Share some news!" maxlength="64000"></textarea></h3>
-		<input type="submit" value="Share!">
+		<input type="submit" name="add-news" value="Share!">
 	</form>
 </div>
 <hr style="position: absolute;width: 100%;left:0px;">
 <hr style="position: absolute;width: 100%;left:0px;">
 <div class="add-news">
-	<h2>Users settings</h2>
-	<input type="text" maxlength="100" name='news_header' class="form-control"  placeholder="Input username to find user">
+	<form class="News-form" href='' method="POST">
+		<h2>Users settings</h2>
+		<input type="text" maxlength="100" name='search-username' class="form-control"  placeholder="Input username to find user">
+		<input type="submit" name="find-user" value="Find">
+	</form>
 </div>
 {% endblock %}
 
