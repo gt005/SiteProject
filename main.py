@@ -183,9 +183,9 @@ def scoreboard():
         user_in_scoreboard_sport = [user_in_scoreboard_sport]
         user_in_scoreboard_creation = [user_in_scoreboard_creation]
     return render_template('scoreboard.html',
-                           user_in_scoreboard_sport=sorted(user_in_scoreboard_sport, key=lambda x: -x.rating_sport),
-                           user_in_scoreboard_creation=sorted(user_in_scoreboard_creation, key=lambda x: -x.rating_creation),
-                           user_in_scoreboard_study=sorted(user_in_scoreboard_study, key=lambda x: -x.rating_study))
+                           user_in_scoreboard_sport=sorted(user_in_scoreboard_sport, key=lambda x: (-x.rating_sport, x.username)),
+                           user_in_scoreboard_creation=sorted(user_in_scoreboard_creation, key=lambda x: (-x.rating_creation, x.username)),
+                           user_in_scoreboard_study=sorted(user_in_scoreboard_study, key=lambda x: (-x.rating_study, x.username)))
 
 
 @app.route('/videos')
