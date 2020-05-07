@@ -175,9 +175,6 @@ def scoreboard():
     user_in_scoreboard_sport = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_sport')
     user_in_scoreboard_creation = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_creation')
     user_in_scoreboard_study = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_study')
-    print(user_in_scoreboard_sport)
-    print(user_in_scoreboard_creation)
-    print(user_in_scoreboard_study)
     if not isinstance(user_in_scoreboard_sport, list):
         user_in_scoreboard_study = [user_in_scoreboard_study]
         user_in_scoreboard_sport = [user_in_scoreboard_sport]
@@ -283,6 +280,26 @@ def news():
 @app.route('/video_player')
 def video_player():
     return render_template('video_player.html', video_name="Приключения кота и его подруги!")
+
+
+@app.route('/add_video', methods=['post', 'get'])
+def add_new_video():
+    message = ''
+    if request.method == 'POST' and session['user']:
+        video_name = request.form.get('video_name')
+        print(request.files)
+        if request.files:
+            if video_name:
+                file = request.files['video_file']
+                category = request.form.get('category')
+                print(category)
+                message = 'Success'
+            else:
+                message = 'Empty video name'
+        else:
+            message = 'Load a file'
+
+    return render_template('add_new_video.html', message=message)
 
 
 if __name__ == "__main__":

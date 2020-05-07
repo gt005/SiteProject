@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/style.css', v=1)}}">
+
+{% endblock %}
+
+{% block title %}
+  Add new video
+{% endblock %}
+
+{% block content %}
+<form class="box" action="" method="POST">
+  <h1>Add new file</h1>
+  {% if message == "Success" %}
+	<div class="alert alert-success" role="alert">
+  			Video successfully added!
+	</div>
+  {% elif message %}
+  	<div class="alert alert-danger" role="alert">
+  			{{ message}}
+  	</div>
+  {% endif %}
+  <input type="text" name="video_name" placeholder="Input video name" required>
+  <div class="dada">
+	<label for="myfile" class="chous">Choose file</label>
+	<input type="file" class="my" id="myfile" name="video_file" multiple="multiple" accept="video/*" style="left:50%;" required>
+  </div>  
+  <div class="form-group">
+    <label for="exampleFormControlSelect1">Select a category</label>
+    <select class="form-control" id="exampleFormControlSelect1" name="category">
+      <option>Sport</option>
+      <option>Creation</option>
+      <option>Study</option>
+    </select>
+  </div>
+  <input type="submit" name="do_signin" value="Add">
+</form>
+{% endblock %}
+
+
+
