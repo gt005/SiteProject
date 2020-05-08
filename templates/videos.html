@@ -11,34 +11,50 @@
 
 {% block content_title %}
 
-  <p>Popular videos</p>
+  <p>{{ category }}</p>
+  <p>{{ page }}</p>
 
 {% endblock %}
 
 {% block content %}
+
 <div class="list-group">
   <a class="list-group-item list-group-item-action active">
     Category
   </a>
-  <a href="{{ url_for('watch_category', category='Sport') }}" class="list-group-item list-group-item-action">Sport</a>
-  <a href="{{ url_for('watch_category', category='Creation') }}" class="list-group-item list-group-item-action">Creation</a>
-  <a href="{{ url_for('watch_category', category='Study') }}" class="list-group-item list-group-item-action">Study</a>
-  <a href="{{ url_for('watch_category', category='Something else') }}" class="list-group-item list-group-item-action">Something else</a>
+  <a href="{{ url_for('videos', category='All categories') }}" class="list-group-item list-group-item-action">All categories</a>
+  <a href="{{ url_for('videos', category='Sport') }}" class="list-group-item list-group-item-action">Sport</a>
+  <a href="{{ url_for('videos', category='Creation') }}" class="list-group-item list-group-item-action">Creation</a>
+  <a href="{{ url_for('videos', category='Study') }}" class="list-group-item list-group-item-action">Study</a>
+  <a href="{{ url_for('videos', category='Popular') }}" class="list-group-item list-group-item-action">Most popular videos</a>
 </div>
 
 <div class="VideoContent">
-	<ul class="listVideo">
-	  {% for file_name in listOfVideos %}
-	    <div class="listVideoElement">  
-	      <li style="list-style-type: none;overflow: hidden;">
-	        <a href="{{ url_for(listOfVideos[file_name])}}" class="video-content-element">  <!-- (file_path) open file in new window -->
-	          <img src="../../static/images/403page.jpg" alt="" class="video-preview">
-	          <p>{{ file_name }}</p>
-	        </a>
-	      </li>
-	    </div>
-	  {% endfor %}
-	</ul>
-</div>
+		<ul class="listVideo">
+		  {% for video in listOfVideos %}
+		    <div class="listVideoElement">  
+		      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
+		        <video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
+				   <source src="{{ listOfVideos[video].file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+				</video>
+		        <a href="{{ url_for('video_player', video_file=listOfVideos[video].file_name)}}" class="video-content-element">
+		          <p>{{ listOfVideos[video].file_name }}</p>
+		        </a>
+		      </li>
+		    </div>
+		  {% endfor %}
+		</ul>
+	</div>
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
+    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+    <li class="page-item"><a class="page-link" href="#">1</a></li>
+    <li class="page-item"><a class="page-link" href="#">2</a></li>
+    <li class="page-item"><a class="page-link" href="#">3</a></li>
+    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+  </ul>
+</nav>
+
 {% endblock %}
 

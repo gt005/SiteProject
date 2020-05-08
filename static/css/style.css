@@ -339,6 +339,39 @@ input[type="submit"]:hover {
   z-index: -1;
 }
 
+.main-container-profile {
+  display: inline-block;
+}
+
+.profile-video-conteiner {
+  position: relative;
+  top: 20%;
+  left: 70%;
+}
+
+.list-group-item.active {
+    color: #fff;
+    background-color: #75c3f3;
+    border-color: #75c3f3;
+}
+
+.page-link {
+  color: #75c3f3;
+}
+
+.page-link:hover {
+  color: #75c3f3;
+}
+
+.video-pagination {
+  position: fixed;
+  left: 50%;
+  font-size: 3ex;
+  transform: translateX(-50%);
+  bottom: 0%;
+  width: 25%;
+}
+
 
 
 

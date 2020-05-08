@@ -57,7 +57,7 @@
         <a class="nav-link" href="{{ url_for('news') }}"><i class="fa fa-newspaper-o" aria-hidden="true"></i> News</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('videos') }}"><i class="fa fa-video-camera" aria-hidden="true"></i> Videos</a>
+        <a class="nav-link" href="{{ url_for('videos', category='All categories') }}"><i class="fa fa-video-camera" aria-hidden="true"></i> Videos</a>
       </li>
       {% if not 'user' in session %}
         <li class="nav-item">

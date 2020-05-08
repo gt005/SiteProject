@@ -33,7 +33,14 @@ class User():
 
 
 class File():
-    pass
+    def __init__(self, *args):
+        self.id = args[0]
+        self.username = args[1]
+        self.file_name = args[2]
+        self.category = args[3]
+        self.views = args[4]
+        self.likes = args[5]
+        self.file_path = args[6]
 
 
 class Article():
@@ -44,20 +51,29 @@ class Article():
         self.publication_time = args[3]
 
 
-def upload_file(file, upload_folder):
+def upload_file(file, upload_folder, file_type, last_id, file_object=None):
     if not file:
         return 'Choose a file.'
-    if not allowed_file(file.filename):
+    if not allowed_file(file.filename, file_type):
         return 'Invalid file name.'
-    if file and allowed_file(file.filename):
+    if file and allowed_file(file.filename, file_type) and file_type == 'image':
         filename = secure_filename(file.filename)
         file.save(os.path.join(upload_folder, hashlib.md5(bytes(session['user'], encoding='utf-8')).hexdigest() + '.png'))
         return 'Success'
+    elif file and allowed_file(file.filename, file_type) and file_type == 'video':
+        file.save(os.path.join(upload_folder, hashlib.md5(
+                         bytes(str(last_id + 1), encoding='utf-8')).hexdigest() \
+                     + file.filename[file.filename.rfind('.'):]))
+        return 'Success'
 
 
-def allowed_file(filename):
+def allowed_file(filename, file_type):
+    if file_type == 'image':
+        extensions = ALLOWED_IMAGE_EXTENSIONS
+    else:
+        extensions = ALLOWED_VIDEO_EXTENSIONS
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_IMAGE_EXTENSIONS
+           filename.rsplit('.', 1)[1].lower() in extensions
 
 
 def verify_password_on_correct(**verifiable):
@@ -104,10 +120,6 @@ def accessing_the_database(query, args, changes=False):
     return db_cursor.fetchall()  # Достает то, что вернул запрос
 
 
-def setting_session():
-    pass
-
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -116,7 +128,7 @@ def index():
 @app.route('/login', methods=['post', 'get'])
 def login():
     message = ''  # Для вывода предупреждений в форме
-    if request.method == 'POST':
+    if request.method == 'POST' and request.form.get('do_signin'):
         session.permanent = True
         username = str(request.form.get('username'))   # Достает значения из формы по методу POST
         password = str(request.form.get('password'))
@@ -165,6 +177,7 @@ def registration():
 def page_not_found(e):
     return render_template('404.html')
 
+
 @app.errorhandler(403)
 def have_no_permission(e):
     return render_template('403.html')
@@ -185,22 +198,34 @@ def scoreboard():
                            user_in_scoreboard_study=sorted(user_in_scoreboard_study, key=lambda x: (-x.rating_study, x.username)))
 
 
-@app.route('/videos')
-def videos():
-    # Вместо этого словаря будет из базы данных брать данные
-    return render_template('videos.html', listOfVideos={
-        'Приaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 'index', 'Еще видосик какой-то': 'login', '3': 'registration',
-        '4': 'login', '5': 'login', '6': 'login',
-        '7': 'login', '8': 'login', '9': 'login'})
+@app.route('/videos/<category>')
+def videos(category):
+    page = request.args.get('p')
 
+    if page is None:
+        page = 0
+    elif page.isdigit():
+        page = int(page) - 1
+    else:
+        abort(404)
 
-@app.route('/videos/category/<category>')  # Вместо <> подставится значение, оно же передастся в функцию
-def watch_category(category):
-    return render_template('videos.html', listOfVideos={
-        'Приaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 'index',
-        'Еще видосик какой-то': 'login', '3': 'registration',
-        '4': 'login', '5': 'login', '6': 'login',
-        '7': 'login', '8': 'login', '9': 'login'})
+    if category == 'All categories':
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_all_files'])
+    elif category == 'Sport':
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Sport', page * 10, page * 10 + 20)
+    elif category == 'Creation':
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Creation', page * 10, page * 10 + 20)
+    elif category == 'Study':
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Study', page * 10, page * 10 + 20)
+    elif category == 'Popular':
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_popular_videos'], page * 10, page * 10 + 20)
+    else:
+        abort(404)
+    if not isinstance(listOfVideos, list) and listOfVideos:
+        listOfVideos = [listOfVideos]
+    elif listOfVideos is None:
+        listOfVideos = ''
+    return render_template('videos.html', category=category,page='page - ' + str(page + 1), listOfVideos={video.id: video for video in listOfVideos})
 
 
 @app.route('/profile', methods=['post', 'get'])
@@ -215,11 +240,14 @@ def profile():
     if request.method == 'POST':
         if request.files:
             file = request.files['file']
-            message = upload_file(file, UPLOAD_FOLDER_FOR_PROFILE_IMAGE)
+            message = upload_file(file, UPLOAD_FOLDER_FOR_PROFILE_IMAGE, 'image')
     if not 'user' in session:
         # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
-    return render_template('profile.html', message=message, file_name=file_name)
+    return render_template('profile.html', message=message, file_name=file_name, listOfVideos={
+        'Приaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 'index', 'Еще видосик какой-то': 'login', '3': 'registration',
+        '4': 'login', '5': 'login', '6': 'login',
+        '7': 'login', '8': 'login', '9': 'login'})
 
 
 @app.route('/logout')
@@ -287,13 +315,17 @@ def add_new_video():
     message = ''
     if request.method == 'POST' and session['user']:
         video_name = request.form.get('video_name')
-        print(request.files)
-        if request.files:
+        if request.files['video_file']:
             if video_name:
                 file = request.files['video_file']
                 category = request.form.get('category')
-                print(category)
-                message = 'Success'
+                last_id = accessing_the_database(QUERY_COMMANDS['get_last_file_id']).id  # смотрим последний id, чтобы добавить по имени md5(id + 1), что позволит создать уникальные названия
+                new_video_file = File(last_id + 1, session['user'], video_name, category, 0, 0, os.path.join('../static/videos/',
+                                             hashlib.md5(bytes(str(last_id + 1), encoding='utf-8')).hexdigest() \
+                                             + file.filename[file.filename.rfind('.'):]))
+                message = upload_file(file, UPLOAD_FOLDER_FOR_VIDEOS, 'video', last_id, new_video_file)
+                if message == 'Success':
+                    accessing_the_database(QUERY_COMMANDS['create_file'], session['user'], video_name, category, new_video_file.file_path, changes=True)
             else:
                 message = 'Empty video name'
         else:
