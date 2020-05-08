@@ -1,15 +1,37 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Not found | The Sun</title>
+	<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/404.css', v=1)}}">
+</head>
+<body>
+	<div id="main">
+    <div id="msg">Page not found</div>
 
-{% block title %}
-Not found
-{% endblock %}
+    <div id="error">
+        <div id="f1">4</div>
+        <div id="circle">
+            <div id="smalldot"></div>
+        </div>
+        <div id="f2">4</div>
+    </div>
 
-{% block head %}
-<link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/style.css', v=1)}}">
-{% endblock %}
+    <div id="info">We can't seem to find the page<br>you're looking for.</div>
 
-{% block content %}
-	<span class="page-404-text">
-		Ups... Here is Nothing(
-	</span>
-{% endblock %}
+    <div id="btn"> <a class="button-404" href="{{ url_for('index') }}">Back to site</a></div>
+</div>
+
+<div id="ring"></div>
+
+<div class="dusk" id="d1"></div>
+<div class="dusk" id="d2"></div>
+<div class="dusk" id="d3"></div>
+<div class="dusk" id="d4"></div>
+<div class="dusk" id="d5"></div>
+<div class="dusk" id="d6"></div>
+<div class="dusk" id="d7"></div>
+<div class="dusk" id="d8"></div>
+<div class="dusk" id="d9"></div>
+</body>
+</html>

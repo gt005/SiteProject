@@ -13,23 +13,59 @@
 {% endblock %}
 
 {% block content %}
-<div class="profile-image-conteiner">
-	<img src="../static/images/profile_photos/{{ file_name }}" alt="" class="profile-image">
-	{% if message == "Success" %}
-		<div class="alert alert-success" role="alert">
-  			Profile photo successfully updated! Reload page to see changes!
-		</div>
-  	{% elif message %}
-  		<div class="alert alert-danger" role="alert">
-  			{{ message}}
-  		</div>
-	{% endif %}
-	<p style="text-align: center;">Here you can change your profile picture</p>
-	<form class="box" action="" method="post" enctype="multipart/form-data" style="width: 100%;padding: 2ex;">
-	<input type="file" name="file" multiple accept="image/*,image/jpeg" class="custom-file-input" id="customFile">
-	<label class="custom-file-label" for="customFile">Choose file</label>
-	<input type="submit" value='Change'>
-</form>
+<div class="profile-conteiner">
+	<div class="profile-image-conteiner">
+		<img src="../static/images/profile_photos/{{ file_name }}" alt="" class="profile-image">
+		{% if message == "Success" %}
+			<div class="alert alert-success" role="alert">
+	  			Profile photo successfully updated! Reload page to see changes!
+			</div>
+	  	{% elif message %}
+	  		<div class="alert alert-danger" role="alert">
+	  			{{ message}}
+	  		</div>
+		{% endif %}
+		<p style="text-align: center;">Here you can change your profile picture</p>
+		<form class="box" action="" method="post" enctype="multipart/form-data" style="width: 100%;padding: 2ex;">
+			<input type="file" name="file" multiple accept="image/*,image/jpeg" class="custom-file-input" id="customFile">
+			<label class="custom-file-label" for="customFile">Choose file</label>
+			<input type="submit" value='Change'>
+		</form>
+	</div>
+	<div class="profile-videos">
+		<ul class="profile-video-list">
+			{% for oneVideoFromList in listOfMyVideosForProfile %}
+			
+				<li class="profile-video-list-element">
+					<video src="{{ oneVideoFromList.file_path }}" width="80%" height="100%"></video>
+					<span>
+						{{ oneVideoFromList.file_name }}
+					</span>
+				</li>
+				
+			{% endfor %}
+		</ul>
+	</div>
+
+	<div class="VideoContent">
+	<ul class="listVideo">
+	  {% for video in listOfVideos %}
+	    <div class="listVideoElement">  
+	      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
+	        <video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
+			   <source src="{{ listOfVideos[video].file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+			</video>
+	        <a href="{{ url_for('video_player', video_file=listOfVideos[video].file_name)}}" class="video-content-element">
+	          <p>{{ listOfVideos[video].file_name }}</p>
+	        </a>
+	      </li>
+	    </div>
+	  {% endfor %}
+	</ul>
 </div>
+</div>
+
+
+
 
 {% endblock %}

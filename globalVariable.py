@@ -11,11 +11,13 @@ QUERY_COMMANDS = {
     'get_last_file_id': "select * from files order by id desc limit 1;",
     'get_popular_videos': "select * from files order by views desc limit %s, %s;",
     'get_file_with_category': "select * from files where category=%s limit %s, %s;",
+    'get_user_files': "select * from files where username=%s;",
     'create_file': "insert into files (username, file_name, category, file_path) values (%s, %s, %s, %s);",
     'create_news': "insert into news (header, news_text, publication_time) values (%s, %s, %s);",
     'get_articles': "select * from news limit 15;"
-    
-    '''SELECT 
+}  # TODO: Дописать все команды
+
+'''SELECT 
 u1.* 
 FROM 
 users u1, 
@@ -25,7 +27,6 @@ u1.role_id=5 AND u1.id=(rs.id+random_from_php)
 ORDER BY 
 rs.random_seed
 LIMIT 10'''
-}  # TODO: Дописать все команды
 
 PASSWORD_FORM = '''Password form: 
 1) Use only latin character, numbers and symbol '_' 

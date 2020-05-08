@@ -104,15 +104,16 @@ def queryToObject(function):
             type_of_object = Article
         db_answer = function(query=query, args=args, changes=changes)
         if not changes and db_answer:
-            if len(db_answer) == 1:
-                return type_of_object(*(db_answer[0]))  # Формат ответа [(username, hashed_password......)]
-            else:
-                return [type_of_object(*(db_answer[i])) for i in range(len(db_answer))]
-    return wrapper  # Возвращает значение wrapper
+            # Формат ответа [(username, hashed_password......)]
+            return [type_of_object(*(db_answer[i])) for i in range(len(db_answer))]
+        if not db_answer:
+            return []
+    return wrapper  # Возвращает значение отработавшего wrapper (немного не так, но для понимания)
 
 
 @queryToObject  # Вызывая эту функцию(accessing_the_database), будет выполняться queryToObject
 def accessing_the_database(query, args, changes=False):
+    print(query)
     db_cursor.execute(query, args)  # Выполняет запрос
     if changes:
         data_base.commit()  # Подтверждает изменения в базе данных
@@ -134,12 +135,12 @@ def login():
         password = str(request.form.get('password'))
         if not username and password:
             message = 'Empty login or password.'
-        elif accessing_the_database(QUERY_COMMANDS['get_user'], username) is None:  # count(username)
+        elif not accessing_the_database(QUERY_COMMANDS['get_user'], username):  # count(username)
             message = 'User does not exist.'
         elif not all(verify_password_on_correct(username=username, password=password).values()):
             message = PASSWORD_FORM
         else:
-            result = accessing_the_database(QUERY_COMMANDS['get_user'], username).hashed_password
+            result = accessing_the_database(QUERY_COMMANDS['get_user'], username)[0].hashed_password
             if bcrypt.checkpw(bytes(password, encoding='utf-8'), result):
                 session['user'] = username
                 return redirect(url_for('index'))
@@ -157,7 +158,7 @@ def registration():
         rep_password = str(request.form.get('rep_password'))
         if not username and password and rep_password:
             message = 'Empty login or one of passwords.'
-        elif accessing_the_database(QUERY_COMMANDS['get_user'], username) is not None:  # None, если нет таких пользователей
+        elif accessing_the_database(QUERY_COMMANDS['get_user'], username):  # None, если нет таких пользователей
             message = 'User with the same name already exist.'
         elif not all(verify_password_on_correct(
                 username=username, password=password,
@@ -188,10 +189,6 @@ def scoreboard():
     user_in_scoreboard_sport = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_sport')
     user_in_scoreboard_creation = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_creation')
     user_in_scoreboard_study = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_study')
-    if not isinstance(user_in_scoreboard_sport, list):
-        user_in_scoreboard_study = [user_in_scoreboard_study]
-        user_in_scoreboard_sport = [user_in_scoreboard_sport]
-        user_in_scoreboard_creation = [user_in_scoreboard_creation]
     return render_template('scoreboard.html',
                            user_in_scoreboard_sport=sorted(user_in_scoreboard_sport, key=lambda x: (-x.rating_sport, x.username)),
                            user_in_scoreboard_creation=sorted(user_in_scoreboard_creation, key=lambda x: (-x.rating_creation, x.username)),
@@ -221,15 +218,16 @@ def videos(category):
         listOfVideos = accessing_the_database(QUERY_COMMANDS['get_popular_videos'], page * 10, page * 10 + 20)
     else:
         abort(404)
-    if not isinstance(listOfVideos, list) and listOfVideos:
-        listOfVideos = [listOfVideos]
-    elif listOfVideos is None:
+    if listOfVideos is None:
         listOfVideos = ''
     return render_template('videos.html', category=category,page='page - ' + str(page + 1), listOfVideos={video.id: video for video in listOfVideos})
 
 
 @app.route('/profile', methods=['post', 'get'])
 def profile():
+    if not 'user' in session:
+        # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
+        abort(403)
     file_path = os.path.join(UPLOAD_FOLDER_FOR_PROFILE_IMAGE, hashlib.md5(  # Путь к аватарке
         bytes(session['user'], encoding='utf-8')).hexdigest() + '.png')
     if not os.path.exists(file_path):   #  Если аватарки нет, то выводить стандартную
@@ -241,13 +239,10 @@ def profile():
         if request.files:
             file = request.files['file']
             message = upload_file(file, UPLOAD_FOLDER_FOR_PROFILE_IMAGE, 'image')
-    if not 'user' in session:
-        # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
-        abort(403)
-    return render_template('profile.html', message=message, file_name=file_name, listOfVideos={
-        'Приaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa': 'index', 'Еще видосик какой-то': 'login', '3': 'registration',
-        '4': 'login', '5': 'login', '6': 'login',
-        '7': 'login', '8': 'login', '9': 'login'})
+
+    listOfMyVideosForProfile = accessing_the_database(QUERY_COMMANDS['get_user_files'], session['user'])
+    print(listOfMyVideosForProfile)
+    return render_template('profile.html', message=message, file_name=file_name, listOfMyVideosForProfile=listOfMyVideosForProfile)
 
 
 @app.route('/logout')
@@ -259,7 +254,7 @@ def logout():
 @app.route('/admin', methods=['post', 'get'])
 def admin(command=None, user=None):
     if not 'user' in session or \
-            not accessing_the_database(QUERY_COMMANDS['get_user'], session['user']).role_type == 'admin':
+            not accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0].role_type == 'admin':
         # Проверяет, является ли человек админом, если нет, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
     message = ''
@@ -283,8 +278,6 @@ def admin(command=None, user=None):
                 message_to_the_users_search = 'Empty username'
             else:
                 user = accessing_the_database(QUERY_COMMANDS['get_several_users'], user + '%', session['user'])
-                if not isinstance(user, list) and user is not None:
-                    user = [user]
                 if user is None:
                     message_to_the_users_search = 'Users not found'
     elif request.args.get('command') == 'delete' and request.args['user']:
@@ -300,8 +293,6 @@ def admin(command=None, user=None):
 @app.route('/news')
 def news():
     articles = accessing_the_database(QUERY_COMMANDS['get_articles'])
-    if not isinstance(articles, list):  # Если вернулся один элемент, делаем список, чтобы при for не было ошибок
-        articles = [articles]
     return render_template('news.html', article_list=articles[::-1])
 
 
@@ -319,7 +310,7 @@ def add_new_video():
             if video_name:
                 file = request.files['video_file']
                 category = request.form.get('category')
-                last_id = accessing_the_database(QUERY_COMMANDS['get_last_file_id']).id  # смотрим последний id, чтобы добавить по имени md5(id + 1), что позволит создать уникальные названия
+                last_id = accessing_the_database(QUERY_COMMANDS['get_last_file_id'])[0].id  # смотрим последний id, чтобы добавить по имени md5(id + 1), что позволит создать уникальные названия
                 new_video_file = File(last_id + 1, session['user'], video_name, category, 0, 0, os.path.join('../static/videos/',
                                              hashlib.md5(bytes(str(last_id + 1), encoding='utf-8')).hexdigest() \
                                              + file.filename[file.filename.rfind('.'):]))
