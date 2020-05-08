@@ -412,30 +412,16 @@ input[type="submit"]:hover {
   width: 40%;  
 }
 
-.like {
-  transition: all 0.3s linear;
+.like-toggle {
+  cursor: pointer;
+  font-size: 3ex;
+  text-decoration: none;
+  transition: 0.25s;
 }
 
-.hidden{
-  font-size: 0;
+.like-toggle:hover {
+  font-size: 4ex;
 }
-
-.like-toggle{
-  outline:none;
-  box-shadow:none;
-  border: none;
-  width: 40px;
-  height: 30px;
-  font-size: 1.3em;
-  border-radius: 100px;
-}
-
-.like-active.basic{
-  background: #7CC576;
-  color: white;
-}
-
-
 
 
 

@@ -271,7 +271,7 @@ def profile():
             if video_file_object.username != session['user']:
                 abort(403)
                 return ''
-            os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file_object.file_path[video_file_object.file_path.rfind('/'):])
+            os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file_object.file_path[video_file_object.file_path.rfind('/'):])  # отрезаем только название
             accessing_the_database(QUERY_COMMANDS['delete_file'], video_file_object.id, changes=True)
             return redirect(url_for('profile'))
     file_path = os.path.join(UPLOAD_FOLDER_FOR_PROFILE_IMAGE, hashlib.md5(  # Путь к аватарке
@@ -340,17 +340,27 @@ def admin(command=None, user=None):
 
 @app.route('/video_player', methods=['post', 'get'])
 def video_player():
+    current_user = accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0]
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
-    video_file = accessing_the_database(QUERY_COMMANDS['get_file'], int(request.args.get('video_file')))[0]
-    if not video_file:  # Если пользователь все-таки не вставил свой id в строку поиска и такого видео нет
-        abort(404)
-    if 'user' in session and video_file.username != session['user']:
-        if f"?{video_file.id}?" not in accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0].my_views: # Если видео не просмотрено(нет в просмотрах)
-            accessing_the_database(QUERY_COMMANDS['add_one_view'], video_file.id, changes=True)
-            accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", changes=True)
-    return render_template('video_player.html', video_file=video_file)
+    if request.method == 'POST' and request.args.get('like_button_pressed'):
+        if f"?{int(request.args.get('video_file'))}?" not in current_user.my_likes:
+            accessing_the_database(QUERY_COMMANDS['add_one_like'], int(request.args.get('video_file')), changes=True)
+            accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{int(request.args.get('video_file'))}?", changes=True)
+    else:
+        video_file = accessing_the_database(QUERY_COMMANDS['get_file'], int(request.args.get('video_file')))[0]
+        if not video_file:  # Если пользователь все-таки не вставил свой id в строку поиска и такого видео нет
+            abort(404)
+        if 'user' in session and video_file.username != session['user']:
+            if f"?{video_file.id}?" not in current_user.my_views: # Если видео не просмотрено(нет в просмотрах)
+                accessing_the_database(QUERY_COMMANDS['add_one_view'], video_file.id, changes=True)
+                accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", changes=True)
+    if int(request.args.get('video_file')) in current_user.my_likes:
+        like_button = 'liked'
+    else:
+        like_button = 'not liked'
+    return render_template('video_player.html', video_file=video_file, like_button=like_button)
 
 
 @app.route('/add_video', methods=['post', 'get'])

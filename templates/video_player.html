@@ -18,10 +18,13 @@
       {{ video_file.file_name  }}
     </h1>
     Creator: {{ video_file.username }}
+    <input type="hidden" id="id_user" />
   	<div class='like'>
-	  <button class='like-toggle basic'>♥</button>
-	  <span class='hidden'>1 Like</span>
+  		{% if like_button == 'liked' %}
+	  		<a class='like-toggle' href="{{ url_for('video_player', video_file=video_file.id, like_button_pressed=True) }}" id='hidden'><i class="fa fa-heart-o" aria-hidden="true"></i></a>
+	  	{% endif %}
 	</div>
+	<br>
   </div>
   <hr>
   <div class="other-videos">

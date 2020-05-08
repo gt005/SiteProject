@@ -16,7 +16,7 @@ QUERY_COMMANDS = {
     'delete_file': "delete from files where id=%s;",
     'get_file': "select * from files where id=%s;",
     'add_one_view': "update files set views = views + 1 where id = %s;",
-    'add_like': "update files set likes = likes + 1 where id = %s;",
+    'add_one_like': "update files set likes = likes + 1 where id = %s;",
     'remove_like': "update files set likes = likes - 1 where id = %s;",
     'create_file': "insert into files (username, file_name, category, file_path) values (%s, %s, %s, %s);",
     'search_files': "select * from files where file_name like %s;",
