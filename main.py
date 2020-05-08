@@ -4,6 +4,7 @@ import os
 import re
 import hashlib
 import datetime
+from random import randint
 from flask import Flask, request, g, abort, render_template, url_for, redirect, make_response, session
 from app import app
 import bcrypt
@@ -55,7 +56,7 @@ class Article():
         self.publication_time = args[3]
 
 
-def upload_file(file, upload_folder, file_type, last_id, file_object=None):
+def upload_file(file, upload_folder, file_type, last_id, *args, file_object=None):
     if not file:
         return 'Choose a file.'
     if not allowed_file(file.filename, file_type):
@@ -71,7 +72,7 @@ def upload_file(file, upload_folder, file_type, last_id, file_object=None):
         return 'Success'
 
 
-def allowed_file(filename, file_type):
+def allowed_file(filename, file_type, *args):
     if file_type == 'image':
         extensions = ALLOWED_IMAGE_EXTENSIONS
     else:
@@ -96,7 +97,7 @@ def verify_password_on_correct(**verifiable):
     return result
 
 
-def queryToObject(function):
+def queryToObject(function, *args):
     # TODO: Придумать нормальное название
     def wrapper(query, *args, changes=False):
         ''' Превращает запрос к бд в объект запрашиваемого типа '''
@@ -115,8 +116,14 @@ def queryToObject(function):
     return wrapper  # Возвращает значение отработавшего wrapper (немного не так, но для понимания)
 
 
+def findVideo(*args):
+    if request.method == 'POST' and request.form.get('commit_search'):
+        search_string = str(request.form.get('search_string'))
+        return search_string.lower()
+
+
 @queryToObject  # Вызывая эту функцию(accessing_the_database), будет выполняться queryToObject
-def accessing_the_database(query, args, changes=False):
+def accessing_the_database(query, args, *other, changes=False):
     db_cursor.execute(query, args)  # Выполняет запрос
     if changes:
         data_base.commit()  # Подтверждает изменения в базе данных
@@ -124,14 +131,19 @@ def accessing_the_database(query, args, changes=False):
     return db_cursor.fetchall()  # Достает то, что вернул запрос
 
 
-@app.route('/')
+@app.route('/', methods=['post', 'get'])
 def news():
+    search = findVideo()
+    if search: return redirect(url_for('videos', category='search', search_string=search))
     articles = accessing_the_database(QUERY_COMMANDS['get_articles'])
     return render_template('news.html', article_list=articles[::-1])
 
 
 @app.route('/login', methods=['post', 'get'])
 def login():
+    search = findVideo()
+    if search: return redirect(
+        url_for('videos', category='search', search_string=search))
     message = ''  # Для вывода предупреждений в форме
     if request.method == 'POST' and request.form.get('do_signin'):
         session.permanent = True
@@ -155,6 +167,9 @@ def login():
 
 @app.route('/registration', methods=['post', 'get'])
 def registration():
+    search = findVideo()
+    if search: return redirect(
+        url_for('videos', category='search', search_string=search))
     message = ''  # Для вывода предупреждений в форме
     if request.method == 'POST':
         username = str(request.form.get('username'))  # Достает значения из формы по методу POST
@@ -184,12 +199,19 @@ def page_not_found(e):
 
 
 @app.errorhandler(403)
+@app.route('/403-page', methods=['post', 'get'])
 def have_no_permission(e):
+    search = findVideo()
+    if search: return redirect(
+        url_for('videos', category='search', search_string=search))
     return render_template('403.html')
 
 
-@app.route('/scoreboard')
+@app.route('/scoreboard', methods=['post', 'get'])
 def scoreboard():
+    search = findVideo()
+    if search: return redirect(
+        url_for('videos', category='search', search_string=search))
     user_in_scoreboard_sport = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_sport')
     user_in_scoreboard_creation = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_creation')
     user_in_scoreboard_study = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_study')
@@ -199,8 +221,11 @@ def scoreboard():
                            user_in_scoreboard_study=sorted(user_in_scoreboard_study, key=lambda x: (-x.rating_study, x.username)))
 
 
-@app.route('/videos/<category>')
+@app.route('/videos/<category>', methods=['post', 'get'])
 def videos(category):
+    search = findVideo()
+    if search: return redirect(
+        url_for('videos', category='search', search_string=search))
     if request.args.get('p') is not None and request.args.get('p').isdigit():
         page = int(request.args.get('p')) - 1
     elif request.args.get('p') is None:
@@ -218,20 +243,27 @@ def videos(category):
         listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Study')
     elif category == 'Popular':
         listOfVideos = accessing_the_database(QUERY_COMMANDS['get_popular_videos'])
+    elif category == 'search':
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['search_files'], f"%{request.args.get('search_string')}%")
+        category = request.args.get('search_string')
     else:
         abort(404)
+
     listOfVideos = listOfVideos[page * 6: page * 6 + 6]
+
     if listOfVideos is None:
         listOfVideos = ''
-    return render_template('videos.html', category=category,page='page - ' + str(page + 1), listOfVideos={video.id: video for video in listOfVideos})
+    return render_template('videos.html', category=category, page='page - ' + str(page + 1), listOfVideos={video.id: video for video in listOfVideos})
 
 
 @app.route('/profile', methods=['post', 'get'])
 def profile():
+    search = findVideo()
+    if search: return redirect(
+        url_for('videos', category='search', search_string=search))
     if not 'user' in session:
         # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
-    print(request.args)
     if request.args.get('command') == 'delete_file':
         if request.args.get('video_file_id'):
             video_file = request.args.get('video_file_id')
@@ -258,7 +290,7 @@ def profile():
     return render_template('profile.html', message=message, file_name=file_name, listOfMyVideosForProfile=listOfMyVideosForProfile)
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['post', 'get'])
 def logout():
     session.pop("user", None)    # Удаляет cookie сессии
     return redirect(url_for('news'))
@@ -266,6 +298,9 @@ def logout():
 
 @app.route('/admin', methods=['post', 'get'])
 def admin(command=None, user=None):
+    search = findVideo()
+    if search: return redirect(
+        url_for('videos', category='search', search_string=search))
     if not 'user' in session or \
             not accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0].role_type == 'admin':
         # Проверяет, является ли человек админом, если нет, вызывает ошибку 403 и переходит на ф-ию have_no_permission
@@ -280,7 +315,7 @@ def admin(command=None, user=None):
             if not (news_header and news_text):
                 message = 'Empty header or text'
             else:
-                publication_time = datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                publication_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 accessing_the_database(
                     QUERY_COMMANDS['create_news'], news_header,
                     news_text, publication_time, changes=True)
@@ -303,14 +338,15 @@ def admin(command=None, user=None):
     return render_template('admin.html', message=message, message_to_the_users_search=message_to_the_users_search, user=user)
 
 
-@app.route('/video_player')
+@app.route('/video_player', methods=['post', 'get'])
 def video_player():
+    search = findVideo()
+    if search: return redirect(
+        url_for('videos', category='search', search_string=search))
     video_file = accessing_the_database(QUERY_COMMANDS['get_file'], int(request.args.get('video_file')))[0]
     if not video_file:  # Если пользователь все-таки не вставил свой id в строку поиска и такого видео нет
         abort(404)
     if 'user' in session and video_file.username != session['user']:
-        print(accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0].my_views)
-        print(f"?{video_file.id}?")
         if f"?{video_file.id}?" not in accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0].my_views: # Если видео не просмотрено(нет в просмотрах)
             accessing_the_database(QUERY_COMMANDS['add_one_view'], video_file.id, changes=True)
             accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", changes=True)
@@ -319,6 +355,9 @@ def video_player():
 
 @app.route('/add_video', methods=['post', 'get'])
 def add_new_video():
+    search = findVideo()
+    if search: return redirect(
+        url_for('videos', category='search', search_string=search))
     message = ''
     if request.method == 'POST' and session['user']:
         video_name = request.form.get('video_name')

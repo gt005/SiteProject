@@ -48,7 +48,7 @@
 			   <source src="{{ listOfVideos[video].file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
 			</video>
 	        <a href="{{ url_for('video_player', video_file=listOfVideos[video].id)}}" class="video-content-element" style="text-align: center;">
-	          <p>{{ listOfVideos[video].file_name }}<br>Creator: {{ listOfVideos[video].username }}</p>
+	          <p>{{ listOfVideos[video].file_name }}<br>Creator: {{ listOfVideos[video].username }}<br>Category: {{ listOfVideos[video].category }}</p>
 	        </a>
 	      </li>
 	    </div>

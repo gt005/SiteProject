@@ -8,7 +8,7 @@ QUERY_COMMANDS = {
     'get_scoreboard': "select * from users order by %s desc limit 50;",
     'change_to_admin': "update users set role_type='admin' where username=%s;",
     'add_user': "insert into users (username, hashed_password) values (%s, %s);",
-    'get_all_files': "select * from files;",
+    'get_all_files': "select * from files order by category;",
     'get_last_file_id': "select * from files order by id desc limit 1;",
     'get_popular_videos': "select * from files order by views desc;",
     'get_file_with_category': "select * from files where category=%s;",
@@ -19,6 +19,7 @@ QUERY_COMMANDS = {
     'add_like': "update files set likes = likes + 1 where id = %s;",
     'remove_like': "update files set likes = likes - 1 where id = %s;",
     'create_file': "insert into files (username, file_name, category, file_path) values (%s, %s, %s, %s);",
+    'search_files': "select * from files where file_name like %s;",
     'create_news': "insert into news (header, news_text, publication_time) values (%s, %s, %s);",
     'get_articles': "select * from news limit 20;",
     'set_auto_increment_null': "ALTER TABLE files AUTO_INCREMENT=0;"
