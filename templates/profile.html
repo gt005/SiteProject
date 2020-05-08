@@ -33,36 +33,41 @@
 		</form>
 	</div>
 	<div class="profile-videos">
-		<ul class="profile-video-list">
-			{% for oneVideoFromList in listOfMyVideosForProfile %}
-			
-				<li class="profile-video-list-element">
-					<video src="{{ oneVideoFromList.file_path }}" width="80%" height="100%"></video>
-					<span>
-						{{ oneVideoFromList.file_name }}
-					</span>
-				</li>
-				
-			{% endfor %}
-		</ul>
-	</div>
+		{% if listOfMyVideosForProfile %}
+			<h1>Your videos</h1>
+			<ul class="profile-video-list">
+				{% for oneVideoFromList in listOfMyVideosForProfile %}
+					<li class="profile-video-list-element">
+						<video width="80%" height="100%" controls="controls" style="position: relative;">
+				  			<source src="{{ oneVideoFromList.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+						</video>
+		        		<a href="{{ url_for('video_player', video_file=oneVideoFromList.id)}}" class="video-content-element">
+		          			<p>{{ oneVideoFromList.file_name }}</p>
+		        		</a>
 
-	<div class="VideoContent">
-	<ul class="listVideo">
-	  {% for video in listOfVideos %}
-	    <div class="listVideoElement">  
-	      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
-	        <video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
-			   <source src="{{ listOfVideos[video].file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-			</video>
-	        <a href="{{ url_for('video_player', video_file=listOfVideos[video].file_name)}}" class="video-content-element">
-	          <p>{{ listOfVideos[video].file_name }}</p>
-	        </a>
-	      </li>
-	    </div>
-	  {% endfor %}
-	</ul>
-</div>
+						<div class="dropdown" style="padding-bottom: 2ex; width: 25%;text-align: center;left: 35%">
+						  <button style="background-color: #75c3f3;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						    <span style="font-size: 1.2em;color: #4D6FBB;"><i class="fa fa-question" aria-hidden="true"></i></span>
+						  </button>
+						  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						    <a class="dropdown-item" href="{{ url_for('profile', command='delete_file', video_file_id=oneVideoFromList.id) }}" style="color:red;">Delete video</a>
+						    <hr style="padding: 0;margin:0;">
+						    <a class="dropdown-item disabled" href="" style="color: #75c3f3;">category: {{ oneVideoFromList.category }}</a>
+						    <hr style="padding: 0;margin:0;">
+					    	<a class="dropdown-item disabled" href="" style="color: #75c3f3;">views: {{ oneVideoFromList.views }}</a>
+							<hr style="padding: 0;margin:0;">
+					    	<a class="dropdown-item disabled" href="" style="color: #75c3f3;">likes: {{ oneVideoFromList.likes }}</a>
+						  </div>
+						</div>
+					</li>
+				{% endfor %}
+			</ul>
+		{% else %}
+			<div class="alert alert-danger" role="alert" style="top: 10em;left: 10em;position: absolute;">
+	  			You don't have any videos
+	  		</div>
+		{% endif %}
+	</div>
 </div>
 
 

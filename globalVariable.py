@@ -4,17 +4,24 @@ QUERY_COMMANDS = {
     'get_user': "select * from users where username=%s;",
     'get_several_users': "select * from users where username like %s and username != %s;",
     'delete_user': "delete from users where username=%s;",
+    'add_view_to_user': "update users set my_views = CONCAT(my_views, %s);",
     'get_scoreboard': "select * from users order by %s desc limit 50;",
     'change_to_admin': "update users set role_type='admin' where username=%s;",
     'add_user': "insert into users (username, hashed_password) values (%s, %s);",
     'get_all_files': "select * from files;",
     'get_last_file_id': "select * from files order by id desc limit 1;",
-    'get_popular_videos': "select * from files order by views desc limit %s, %s;",
-    'get_file_with_category': "select * from files where category=%s limit %s, %s;",
+    'get_popular_videos': "select * from files order by views desc;",
+    'get_file_with_category': "select * from files where category=%s;",
     'get_user_files': "select * from files where username=%s;",
+    'delete_file': "delete from files where id=%s;",
+    'get_file': "select * from files where id=%s;",
+    'add_one_view': "update files set views = views + 1 where id = %s;",
+    'add_like': "update files set likes = likes + 1 where id = %s;",
+    'remove_like': "update files set likes = likes - 1 where id = %s;",
     'create_file': "insert into files (username, file_name, category, file_path) values (%s, %s, %s, %s);",
     'create_news': "insert into news (header, news_text, publication_time) values (%s, %s, %s);",
-    'get_articles': "select * from news limit 15;"
+    'get_articles': "select * from news limit 20;",
+    'set_auto_increment_null': "ALTER TABLE files AUTO_INCREMENT=0;"
 }  # TODO: Дописать все команды
 
 '''SELECT 

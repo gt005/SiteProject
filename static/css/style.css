@@ -204,10 +204,10 @@ input[type="submit"]:hover {
 .profile-image-conteiner {
   display: block;
   width: 30%;
-  position: relative;
+  position: absolute;
   left: -5%;
-  top: 20%;
-  transform: translateY(23%);
+  top: 0%;
+  transform: translateY(39%);
 }
 
 .profile-image {
@@ -275,6 +275,7 @@ input[type="submit"]:hover {
   display: inline-block;
   left: 50%;
   transform: translateX(-50%);
+  text-align: center;
 }
 
 .add-video-conteiner {
@@ -326,8 +327,8 @@ input[type="submit"]:hover {
 }
 
 .chous:hover {
-    color: white;
-    background-position: bottom left;
+  color: white;
+  background-position: bottom left;
 }
     
 .my {
@@ -350,13 +351,14 @@ input[type="submit"]:hover {
 }
 
 .list-group-item.active {
-    color: #fff;
-    background-color: #75c3f3;
-    border-color: #75c3f3;
+  color: #fff;
+  background-color: #75c3f3;
+  border-color: #75c3f3;
 }
 
 .page-link {
   color: #75c3f3;
+  font-size: 2.5ex;
 }
 
 .page-link:hover {
@@ -371,6 +373,72 @@ input[type="submit"]:hover {
   bottom: 0%;
   width: 25%;
 }
+
+.profile-conteiner {
+  display: table;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.profile-videos {
+  height: 100%;
+  text-align: center;
+  display: block;
+  width: 60%;
+  position: relative;
+  left: 35%;
+  top: 0%;
+  transform: translateY(15%);
+}
+
+.profile-video-list {
+  list-style-type: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: stretch;
+  height: 100%;
+}
+
+.profile-video-list-element {
+  width: 40%;
+  margin-bottom: 8em;
+}
+
+.delete-video-button {
+  border: 1px solid #75c3f3;
+  border-radius: 5px;
+  background: none;
+  width: 40%;  
+}
+
+.like {
+  transition: all 0.3s linear;
+}
+
+.hidden{
+  font-size: 0;
+}
+
+.like-toggle{
+  outline:none;
+  box-shadow:none;
+  border: none;
+  width: 40px;
+  height: 30px;
+  font-size: 1.3em;
+  border-radius: 100px;
+}
+
+.like-active.basic{
+  background: #7CC576;
+  color: white;
+}
+
+
+
+
+
 
 
 

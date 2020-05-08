@@ -11,17 +11,22 @@
 
 {% block content %}
   <div class="video-window">
-  	<!DOCTYPE html>
-
-  <video width="400" height="300" controls="controls">
-   <source src="../static/videos/test2.mp4" type='video/ogg; codecs="theora, vorbis"'>
-   <source src="../static/videos/test2.mp4" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-   <source src="../static/videos/test2.mp4" type='video/webm; codecs="vp8, vorbis"'>
-   Тег video не поддерживается вашим браузером. <a href="video/duel.mp4">Скачайте видео</a>.
-  </video>
+	<video width="53%" height="67%" controls="controls">
+		<source src="{{ video_file.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+	</video>
     <h1>
-      {{ video_name }}
+      {{ video_file.file_name  }}
     </h1>
+    Creator: {{ video_file.username }}
+  	<div class='like'>
+	  <button class='like-toggle basic'>♥</button>
+	  <span class='hidden'>1 Like</span>
+	</div>
   </div>
-  <hr style="position: absolute;top:120%;width: 100%;left:0px;">
+  <hr>
+  <div class="other-videos">
+  	<h2>
+  		Other interesting videos:
+  	</h2>
+  </div>
 {% endblock %}

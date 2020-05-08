@@ -28,31 +28,41 @@
   <a href="{{ url_for('videos', category='Study') }}" class="list-group-item list-group-item-action">Study</a>
   <a href="{{ url_for('videos', category='Popular') }}" class="list-group-item list-group-item-action">Most popular videos</a>
 </div>
+<br>
+<nav aria-label="Page navigation example">
+  <ul class="pagination" >
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">Previous</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">1</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=2, category=category)}}">2</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=3, category=category)}}">3</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">Next</a></li>
+  </ul>
+</nav>
 
 <div class="VideoContent">
-		<ul class="listVideo">
-		  {% for video in listOfVideos %}
-		    <div class="listVideoElement">  
-		      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
-		        <video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
-				   <source src="{{ listOfVideos[video].file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-				</video>
-		        <a href="{{ url_for('video_player', video_file=listOfVideos[video].file_name)}}" class="video-content-element">
-		          <p>{{ listOfVideos[video].file_name }}</p>
-		        </a>
-		      </li>
-		    </div>
-		  {% endfor %}
-		</ul>
-	</div>
+	<ul class="listVideo">
+	  {% for video in listOfVideos %}
+	    <div class="listVideoElement">  
+	      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
+	        <video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
+			   <source src="{{ listOfVideos[video].file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+			</video>
+	        <a href="{{ url_for('video_player', video_file=listOfVideos[video].id)}}" class="video-content-element" style="text-align: center;">
+	          <p>{{ listOfVideos[video].file_name }}<br>Creator: {{ listOfVideos[video].username }}</p>
+	        </a>
+	      </li>
+	    </div>
+	  {% endfor %}
+	</ul>
+</div>
 
 <nav aria-label="Page navigation example">
-  <ul class="pagination">
-    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-    <li class="page-item"><a class="page-link" href="{{ url_for('video_player', )}}">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+  <ul class="pagination" >
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">Previous</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">1</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=2, category=category)}}">2</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=3, category=category)}}">3</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">Next</a></li>
   </ul>
 </nav>
 

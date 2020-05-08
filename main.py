@@ -1,3 +1,5 @@
+#TODO: Доделать страничную навигуцию, чтобы page - 1 и page + 1 были
+
 import os
 import re
 import hashlib
@@ -30,6 +32,8 @@ class User():
         self.rating_creation = args[3]
         self.rating_study = args[4]
         self.role_type = args[5]
+        self.my_likes = args[6]
+        self.my_views = args[7]
 
 
 class File():
@@ -113,7 +117,6 @@ def queryToObject(function):
 
 @queryToObject  # Вызывая эту функцию(accessing_the_database), будет выполняться queryToObject
 def accessing_the_database(query, args, changes=False):
-    print(query)
     db_cursor.execute(query, args)  # Выполняет запрос
     if changes:
         data_base.commit()  # Подтверждает изменения в базе данных
@@ -122,8 +125,9 @@ def accessing_the_database(query, args, changes=False):
 
 
 @app.route('/')
-def index():
-    return render_template('index.html')
+def news():
+    articles = accessing_the_database(QUERY_COMMANDS['get_articles'])
+    return render_template('news.html', article_list=articles[::-1])
 
 
 @app.route('/login', methods=['post', 'get'])
@@ -143,7 +147,7 @@ def login():
             result = accessing_the_database(QUERY_COMMANDS['get_user'], username)[0].hashed_password
             if bcrypt.checkpw(bytes(password, encoding='utf-8'), result):
                 session['user'] = username
-                return redirect(url_for('index'))
+                return redirect(url_for('news'))
             else:
                 message = 'Wrong password.'
     return render_template('login.html', message=message)
@@ -170,7 +174,7 @@ def registration():
         else:
             accessing_the_database(QUERY_COMMANDS['add_user'], username, bcrypt.hashpw(bytes(password, encoding='utf-8'), bcrypt.gensalt()).decode('utf-8'), changes=True)
             session['user'] = username  # Ставит cookie сессии
-            return redirect(url_for('index'))
+            return redirect(url_for('news'))
     return render_template('registration.html', message=message)
 
 
@@ -197,27 +201,26 @@ def scoreboard():
 
 @app.route('/videos/<category>')
 def videos(category):
-    page = request.args.get('p')
-
-    if page is None:
+    if request.args.get('p') is not None and request.args.get('p').isdigit():
+        page = int(request.args.get('p')) - 1
+    elif request.args.get('p') is None:
         page = 0
-    elif page.isdigit():
-        page = int(page) - 1
     else:
         abort(404)
 
     if category == 'All categories':
         listOfVideos = accessing_the_database(QUERY_COMMANDS['get_all_files'])
     elif category == 'Sport':
-        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Sport', page * 10, page * 10 + 20)
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Sport')
     elif category == 'Creation':
-        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Creation', page * 10, page * 10 + 20)
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Creation')
     elif category == 'Study':
-        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Study', page * 10, page * 10 + 20)
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_file_with_category'], 'Study')
     elif category == 'Popular':
-        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_popular_videos'], page * 10, page * 10 + 20)
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['get_popular_videos'])
     else:
         abort(404)
+    listOfVideos = listOfVideos[page * 6: page * 6 + 6]
     if listOfVideos is None:
         listOfVideos = ''
     return render_template('videos.html', category=category,page='page - ' + str(page + 1), listOfVideos={video.id: video for video in listOfVideos})
@@ -228,6 +231,17 @@ def profile():
     if not 'user' in session:
         # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
+    print(request.args)
+    if request.args.get('command') == 'delete_file':
+        if request.args.get('video_file_id'):
+            video_file = request.args.get('video_file_id')
+            video_file_object = accessing_the_database(QUERY_COMMANDS['get_file'], video_file)[0]
+            if video_file_object.username != session['user']:
+                abort(403)
+                return ''
+            os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file_object.file_path[video_file_object.file_path.rfind('/'):])
+            accessing_the_database(QUERY_COMMANDS['delete_file'], video_file_object.id, changes=True)
+            return redirect(url_for('profile'))
     file_path = os.path.join(UPLOAD_FOLDER_FOR_PROFILE_IMAGE, hashlib.md5(  # Путь к аватарке
         bytes(session['user'], encoding='utf-8')).hexdigest() + '.png')
     if not os.path.exists(file_path):   #  Если аватарки нет, то выводить стандартную
@@ -241,14 +255,13 @@ def profile():
             message = upload_file(file, UPLOAD_FOLDER_FOR_PROFILE_IMAGE, 'image')
 
     listOfMyVideosForProfile = accessing_the_database(QUERY_COMMANDS['get_user_files'], session['user'])
-    print(listOfMyVideosForProfile)
     return render_template('profile.html', message=message, file_name=file_name, listOfMyVideosForProfile=listOfMyVideosForProfile)
 
 
 @app.route('/logout')
 def logout():
     session.pop("user", None)    # Удаляет cookie сессии
-    return redirect(url_for('index'))
+    return redirect(url_for('news'))
 
 
 @app.route('/admin', methods=['post', 'get'])
@@ -278,7 +291,7 @@ def admin(command=None, user=None):
                 message_to_the_users_search = 'Empty username'
             else:
                 user = accessing_the_database(QUERY_COMMANDS['get_several_users'], user + '%', session['user'])
-                if user is None:
+                if not user:
                     message_to_the_users_search = 'Users not found'
     elif request.args.get('command') == 'delete' and request.args['user']:
         accessing_the_database(QUERY_COMMANDS['delete_user'], request.args['user'], changes=True)
@@ -290,15 +303,18 @@ def admin(command=None, user=None):
     return render_template('admin.html', message=message, message_to_the_users_search=message_to_the_users_search, user=user)
 
 
-@app.route('/news')
-def news():
-    articles = accessing_the_database(QUERY_COMMANDS['get_articles'])
-    return render_template('news.html', article_list=articles[::-1])
-
-
 @app.route('/video_player')
 def video_player():
-    return render_template('video_player.html', video_name="Приключения кота и его подруги!")
+    video_file = accessing_the_database(QUERY_COMMANDS['get_file'], int(request.args.get('video_file')))[0]
+    if not video_file:  # Если пользователь все-таки не вставил свой id в строку поиска и такого видео нет
+        abort(404)
+    if 'user' in session and video_file.username != session['user']:
+        print(accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0].my_views)
+        print(f"?{video_file.id}?")
+        if f"?{video_file.id}?" not in accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0].my_views: # Если видео не просмотрено(нет в просмотрах)
+            accessing_the_database(QUERY_COMMANDS['add_one_view'], video_file.id, changes=True)
+            accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", changes=True)
+    return render_template('video_player.html', video_file=video_file)
 
 
 @app.route('/add_video', methods=['post', 'get'])
@@ -310,7 +326,12 @@ def add_new_video():
             if video_name:
                 file = request.files['video_file']
                 category = request.form.get('category')
-                last_id = accessing_the_database(QUERY_COMMANDS['get_last_file_id'])[0].id  # смотрим последний id, чтобы добавить по имени md5(id + 1), что позволит создать уникальные названия
+                last_id = accessing_the_database(QUERY_COMMANDS['get_last_file_id'])  # смотрим последний id, чтобы добавить по имени md5(id + 1), что позволит создать уникальные названия
+                if not last_id:
+                    accessing_the_database(QUERY_COMMANDS['set_auto_increment_null'], changes=True)
+                    last_id = 0
+                else:
+                    last_id = last_id[0].id
                 new_video_file = File(last_id + 1, session['user'], video_name, category, 0, 0, os.path.join('../static/videos/',
                                              hashlib.md5(bytes(str(last_id + 1), encoding='utf-8')).hexdigest() \
                                              + file.filename[file.filename.rfind('.'):]))
