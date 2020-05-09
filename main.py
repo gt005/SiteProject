@@ -215,6 +215,17 @@ def scoreboard():
     user_in_scoreboard_sport = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_sport')
     user_in_scoreboard_creation = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_creation')
     user_in_scoreboard_study = accessing_the_database(QUERY_COMMANDS['get_scoreboard'], 'rating_study')
+    # Меняет значения None на 0
+    for i in range(len(user_in_scoreboard_sport)):
+        if user_in_scoreboard_sport[i].rating_sport is None:
+            user_in_scoreboard_sport[i].rating_sport = 0
+    for i in range(len(user_in_scoreboard_creation)):
+        if user_in_scoreboard_creation[i].rating_creation is None:
+            user_in_scoreboard_creation[i].rating_creation = 0
+    for i in range(len(user_in_scoreboard_study)):
+        if user_in_scoreboard_study[i].rating_study is None:
+            user_in_scoreboard_study[i].rating_study = 0
+
     return render_template('scoreboard.html',
                            user_in_scoreboard_sport=sorted(user_in_scoreboard_sport, key=lambda x: (-x.rating_sport, x.username)),
                            user_in_scoreboard_creation=sorted(user_in_scoreboard_creation, key=lambda x: (-x.rating_creation, x.username)),
@@ -274,6 +285,7 @@ def profile():
                 return ''
             os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file_object.file_path[video_file_object.file_path.rfind('/'):])  # отрезаем только название
             accessing_the_database(QUERY_COMMANDS['delete_file'], video_file_object.id, changes=True)
+            accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file_object.category.lower()}_rating'], *([video_file_object.username, video_file_object.category] * 3), video_file_object.username, changes=True)  # Нужно 4 раза передать сессию
             return redirect(url_for('profile'))
     file_path = os.path.join(UPLOAD_FOLDER_FOR_PROFILE_IMAGE, hashlib.md5(  # Путь к аватарке
         bytes(session['user'], encoding='utf-8')).hexdigest() + '.png')
