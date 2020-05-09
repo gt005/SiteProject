@@ -16,6 +16,7 @@ QUERY_COMMANDS = {
     'get_user_files': "select * from files where username=%s;",
     'delete_file': "delete from files where id=%s;",
     'get_file': "select * from files where id=%s;",
+    'get_random_files': "select * from files where id != %s order by rand() limit 6;",
     'add_one_view': "update files set views = views + 1 where id = %s;",
     'add_one_like': "update files set likes = likes + 1 where id = %s;",
     'remove_like': "update files set likes = likes - 1 where id = %s;",
@@ -24,6 +25,7 @@ QUERY_COMMANDS = {
     'create_news': "insert into news (header, news_text, publication_time) values (%s, %s, %s);",
     'get_articles': "select * from news limit 20;",
     'set_auto_increment_null': "ALTER TABLE files AUTO_INCREMENT=0;"
+
 }  # TODO: Дописать все команды
 
 '''SELECT 

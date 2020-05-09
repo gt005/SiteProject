@@ -56,7 +56,7 @@ class Article():
         self.publication_time = args[3]
 
 
-def upload_file(file, upload_folder, file_type, last_id, *args, file_object=None):
+def upload_file(file, upload_folder, file_type, *args, last_id=None, file_object=None):
     if not file:
         return 'Choose a file.'
     if not allowed_file(file.filename, file_type):
@@ -253,7 +253,7 @@ def videos(category):
 
     if listOfVideos is None:
         listOfVideos = ''
-    return render_template('videos.html', category=category, page='page - ' + str(page + 1), listOfVideos={video.id: video for video in listOfVideos})
+    return render_template('videos.html', category=category, page='page - ' + str(page + 1), listOfVideos=listOfVideos)
 
 
 @app.route('/profile', methods=['post', 'get'])
@@ -362,7 +362,9 @@ def video_player():
         like_button = 'liked'
     else:
         like_button = 'not liked'
-    return render_template('video_player.html', video_file=video_file, like_button=like_button)
+
+    listOfVideos = accessing_the_database(QUERY_COMMANDS['get_random_files'], video_file.id)
+    return render_template('video_player.html', video_file=video_file, like_button=like_button, listOfVideos=listOfVideos)
 
 
 @app.route('/add_video', methods=['post', 'get'])

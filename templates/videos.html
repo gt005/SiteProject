@@ -44,11 +44,11 @@
 	  {% for video in listOfVideos %}
 	    <div class="listVideoElement">  
 	      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
-	        <video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
-			   <source src="{{ listOfVideos[video].file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-			</video>
-	        <a href="{{ url_for('video_player', video_file=listOfVideos[video].id)}}" class="video-content-element" style="text-align: center;">
-	          <p>{{ listOfVideos[video].file_name }}<br>Creator: {{ listOfVideos[video].username }}<br>Category: {{ listOfVideos[video].category }}</p>
+	        <a href="{{ url_for('video_player', video_file=video.id)}}" class="video-content-element" style="text-align: center;">
+	          	<video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
+			   		<source src="{{ video.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+				</video>
+	          	<p>{{ video.file_name }}<br>Creator: {{ video.username }}<br>Category: {{ video.category }}<br>{{ video.views }} views/{{ video.likes }} likes</p>
 	        </a>
 	      </li>
 	    </div>

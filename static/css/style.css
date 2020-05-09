@@ -402,6 +402,7 @@ input[type="submit"]:hover {
 
 .profile-video-list-element {
   width: 40%;
+  margin-right: 2em;
   margin-bottom: 8em;
 }
 
