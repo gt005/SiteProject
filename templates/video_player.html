@@ -21,7 +21,11 @@
     <input type="hidden" id="id_user" />
   	<div class='like'>
   		{% if like_button == 'liked' %}
-	  		<a class='like-toggle' href="{{ url_for('video_player', video_file=video_file.id, like_button_pressed=True) }}" id='hidden'><i class="fa fa-heart-o" aria-hidden="true"></i></a>
+	  		<i class="fa fa-heart-o" aria-hidden="true" style="font-size: 3ex;color: #4468AF;"> Liked!</i>
+	  		
+	  	{% else %}
+	  		<a class='like-toggle' href="{{ url_for('video_player', video_file=video_file.id, like_button_pressed=True) }}" id='hidden'><i class="fa fa-heart-o" aria-hidden="true"> Tap to like!</i></a>
+
 	  	{% endif %}
 	</div>
 	<br>

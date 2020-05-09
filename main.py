@@ -344,19 +344,21 @@ def video_player():
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
-    if request.method == 'POST' and request.args.get('like_button_pressed'):
-        if f"?{int(request.args.get('video_file'))}?" not in current_user.my_likes:
+    video_file = accessing_the_database(QUERY_COMMANDS['get_file'],
+                                        int(request.args.get('video_file')))[0]
+    if request.args.get('like_button_pressed') == 'True':
+        if f"?{int(request.args.get('video_file'))}?" not in current_user.my_likes and video_file.username != session['user']:
             accessing_the_database(QUERY_COMMANDS['add_one_like'], int(request.args.get('video_file')), changes=True)
-            accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{int(request.args.get('video_file'))}?", changes=True)
+            accessing_the_database(QUERY_COMMANDS['add_likes_to_user'], f"{int(request.args.get('video_file'))}?", session['user'], changes=True)
+            return redirect(url_for('video_player', video_file=int(request.args.get('video_file'))))
     else:
-        video_file = accessing_the_database(QUERY_COMMANDS['get_file'], int(request.args.get('video_file')))[0]
         if not video_file:  # Если пользователь все-таки не вставил свой id в строку поиска и такого видео нет
             abort(404)
         if 'user' in session and video_file.username != session['user']:
             if f"?{video_file.id}?" not in current_user.my_views: # Если видео не просмотрено(нет в просмотрах)
                 accessing_the_database(QUERY_COMMANDS['add_one_view'], video_file.id, changes=True)
-                accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", changes=True)
-    if int(request.args.get('video_file')) in current_user.my_likes:
+                accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", session['user'], changes=True)
+    if f"?{request.args.get('video_file')}?" in current_user.my_likes or video_file.username == session['user']:
         like_button = 'liked'
     else:
         like_button = 'not liked'
