@@ -21,23 +21,21 @@ QUERY_COMMANDS = {
     'add_one_like': "update files set likes = likes + 1 where id = %s;",
     'remove_like': "update files set likes = likes - 1 where id = %s;",
     'create_file': "insert into files (username, file_name, category, file_path) values (%s, %s, %s, %s);",
-    'search_files': "select * from files where file_name like %s;",
+    'search_files_or_users': "select * from files where file_name like %s or username like %s;",
     'create_news': "insert into news (header, news_text, publication_time) values (%s, %s, %s);",
     'get_articles': "select * from news limit 20;",
-    'set_auto_increment_null': "ALTER TABLE files AUTO_INCREMENT=0;"
+    'set_auto_increment_null': "ALTER TABLE files AUTO_INCREMENT=0;",
+    'recalculate_sport_rating': "update users set rating_sport = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;",
+    'recalculate_creation_rating': "update users set rating_creation = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;",
+    'recalculate_study_rating': "update users set rating_study = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;"
 
-}  # TODO: Дописать все команды
+    # 'recalculate_rating': "update users "
+    #                       "set rating_%s = (sum(select views from files where username=%s) / sum(select likes from files where username=%s) / "
+    #                       "count(select * from files where username=%s) * 1000 DIV 1)"
+    #                       " where username=%s;"
+}
 
-'''SELECT 
-u1.* 
-FROM 
-users u1, 
-random_seed rs
-WHERE 
-u1.role_id=5 AND u1.id=(rs.id+random_from_php)
-ORDER BY 
-rs.random_seed
-LIMIT 10'''
+  # update users set rating_sport = ((select sum(views) from files where username='admin') / (select sum(likes) from files where username='admin') / (select count(*) from files where username='admin') * 1000 DIV 1) where username='admin';
 
 PASSWORD_FORM = '''Password form: 
 1) Use only latin character, numbers and symbol '_' 

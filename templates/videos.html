@@ -31,11 +31,11 @@
 <br>
 <nav aria-label="Page navigation example">
   <ul class="pagination" >
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">Previous</a></li>
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">1</a></li>
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=2, category=category)}}">2</a></li>
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=3, category=category)}}">3</a></li>
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">Next</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">First</a></li>
+    {% for i in range(amount_of_pages) %}
+    	<li class="page-item"><a class="page-link" href="{{ url_for('videos', p=i + 1, category=category)}}">{{ i + 1 }}</a></li>
+    {% endfor %}
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=amount_of_pages, category=category)}}">Last</a></li>
   </ul>
 </nav>
 
@@ -58,11 +58,11 @@
 
 <nav aria-label="Page navigation example">
   <ul class="pagination" >
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">Previous</a></li>
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">1</a></li>
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=2, category=category)}}">2</a></li>
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=3, category=category)}}">3</a></li>
-    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">Next</a></li>
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=1, category=category)}}">First</a></li>
+    {% for i in range(amount_of_pages) %}
+    	<li class="page-item"><a class="page-link" href="{{ url_for('videos', p=i + 1, category=category)}}">1</a></li>
+    {% endfor %}
+    <li class="page-item"><a class="page-link" href="{{ url_for('videos', p=amount_of_pages, category=category)}}">Last</a></li>
   </ul>
 </nav>
 

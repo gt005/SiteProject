@@ -18,7 +18,7 @@
       {{ video_file.file_name  }}
     </h1>
     Creator: {{ video_file.username }}
-    <input type="hidden" id="id_user" />
+	<p>{{ video_file.views }} views/{{ video_file.likes }} likes</p>
   	<div class='like'>
   		{% if like_button == 'liked' %}
 	  		<i class="fa fa-heart-o" aria-hidden="true" style="font-size: 3ex;color: #4468AF;"> Liked!</i>

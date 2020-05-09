@@ -1,5 +1,3 @@
-#TODO: Доделать страничную навигуцию, чтобы page - 1 и page + 1 были
-
 import os
 import re
 import hashlib
@@ -156,9 +154,10 @@ def login():
         elif not all(verify_password_on_correct(username=username, password=password).values()):
             message = PASSWORD_FORM
         else:
-            result = accessing_the_database(QUERY_COMMANDS['get_user'], username)[0].hashed_password
-            if bcrypt.checkpw(bytes(password, encoding='utf-8'), result):
+            result = accessing_the_database(QUERY_COMMANDS['get_user'], username)[0]
+            if bcrypt.checkpw(bytes(password, encoding='utf-8'), result.hashed_password):
                 session['user'] = username
+                session['role'] = result.role_type
                 return redirect(url_for('news'))
             else:
                 message = 'Wrong password.'
@@ -189,6 +188,7 @@ def registration():
         else:
             accessing_the_database(QUERY_COMMANDS['add_user'], username, bcrypt.hashpw(bytes(password, encoding='utf-8'), bcrypt.gensalt()).decode('utf-8'), changes=True)
             session['user'] = username  # Ставит cookie сессии
+            session['role'] = 'member'
             return redirect(url_for('news'))
     return render_template('registration.html', message=message)
 
@@ -244,16 +244,17 @@ def videos(category):
     elif category == 'Popular':
         listOfVideos = accessing_the_database(QUERY_COMMANDS['get_popular_videos'])
     elif category == 'search':
-        listOfVideos = accessing_the_database(QUERY_COMMANDS['search_files'], f"%{request.args.get('search_string')}%")
-        category = request.args.get('search_string')
+        listOfVideos = accessing_the_database(QUERY_COMMANDS['search_files_or_users'], f"%{request.args.get('search_string')}%", f"%{request.args.get('search_string')}%")[:6]
+        category = 'Search for: ' + request.args.get('search_string')
     else:
         abort(404)
 
+    amount_of_pages = (len(listOfVideos) + 6 - 1) // 6
     listOfVideos = listOfVideos[page * 6: page * 6 + 6]
 
     if listOfVideos is None:
         listOfVideos = ''
-    return render_template('videos.html', category=category, page='page - ' + str(page + 1), listOfVideos=listOfVideos)
+    return render_template('videos.html', category=category, amount_of_pages=amount_of_pages, page='page - ' + str(page + 1), listOfVideos=listOfVideos)
 
 
 @app.route('/profile', methods=['post', 'get'])
@@ -293,6 +294,7 @@ def profile():
 @app.route('/logout', methods=['post', 'get'])
 def logout():
     session.pop("user", None)    # Удаляет cookie сессии
+    session.pop("role", None)
     return redirect(url_for('news'))
 
 
@@ -329,6 +331,12 @@ def admin(command=None, user=None):
                 if not user:
                     message_to_the_users_search = 'Users not found'
     elif request.args.get('command') == 'delete' and request.args['user']:
+        for video_file_object in accessing_the_database(QUERY_COMMANDS['get_user_files'], request.args['user']):
+            os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file_object.file_path[video_file_object.file_path.rfind('/'):])  # отрезаем только название
+            accessing_the_database(QUERY_COMMANDS['delete_file'],
+                                   video_file_object.id, changes=True)
+        if os.path.exists(os.path.join(UPLOAD_FOLDER_FOR_PROFILE_IMAGE, hashlib.md5(bytes(request.args['user'], encoding='utf-8')).hexdigest() + '.png')):
+            os.remove(os.path.join(UPLOAD_FOLDER_FOR_PROFILE_IMAGE, hashlib.md5(bytes(request.args['user'], encoding='utf-8')).hexdigest() + '.png'))
         accessing_the_database(QUERY_COMMANDS['delete_user'], request.args['user'], changes=True)
         message_to_the_users_search = 'Successfully deleted'
         return redirect(url_for('admin'))
@@ -350,6 +358,7 @@ def video_player():
         if f"?{int(request.args.get('video_file'))}?" not in current_user.my_likes and video_file.username != session['user']:
             accessing_the_database(QUERY_COMMANDS['add_one_like'], int(request.args.get('video_file')), changes=True)
             accessing_the_database(QUERY_COMMANDS['add_likes_to_user'], f"{int(request.args.get('video_file'))}?", session['user'], changes=True)
+            accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)  # Нужно 4 раза передать сессию
             return redirect(url_for('video_player', video_file=int(request.args.get('video_file'))))
     else:
         if not video_file:  # Если пользователь все-таки не вставил свой id в строку поиска и такого видео нет
@@ -358,6 +367,7 @@ def video_player():
             if f"?{video_file.id}?" not in current_user.my_views: # Если видео не просмотрено(нет в просмотрах)
                 accessing_the_database(QUERY_COMMANDS['add_one_view'], video_file.id, changes=True)
                 accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", session['user'], changes=True)
+                accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)  # Нужно 4 раза передать сессию
     if f"?{request.args.get('video_file')}?" in current_user.my_likes or video_file.username == session['user']:
         like_button = 'liked'
     else:
@@ -388,7 +398,7 @@ def add_new_video():
                 new_video_file = File(last_id + 1, session['user'], video_name, category, 0, 0, os.path.join('../static/videos/',
                                              hashlib.md5(bytes(str(last_id + 1), encoding='utf-8')).hexdigest() \
                                              + file.filename[file.filename.rfind('.'):]))
-                message = upload_file(file, UPLOAD_FOLDER_FOR_VIDEOS, 'video', last_id, new_video_file)
+                message = upload_file(file, UPLOAD_FOLDER_FOR_VIDEOS, 'video', new_video_file, last_id=last_id)
                 if message == 'Success':
                     accessing_the_database(QUERY_COMMANDS['create_file'], session['user'], video_name, category, new_video_file.file_path, changes=True)
             else:

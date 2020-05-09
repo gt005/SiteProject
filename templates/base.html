@@ -68,7 +68,7 @@
           <a class="nav-link" href="{{ url_for('add_new_video') }}"><i class="fa fa-plus" aria-hidden="true"></i> Add new video</a>
         </li>
       {% endif %}
-      {% if session['user'] == 'admin' %}
+      {% if session['role'] == 'admin' %}
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('admin') }}"><i class="fa fa-cog fa-spin fa-fw" aria-hidden="true"></i> Admin Panel</a>
       </li>
