@@ -40,20 +40,26 @@
 </nav>
 
 <div class="VideoContent">
-	<ul class="listVideo">
-	  {% for video in listOfVideos %}
-	    <div class="listVideoElement">  
-	      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
-	        <a href="{{ url_for('video_player', video_file=video.id)}}" class="video-content-element" style="text-align: center;">
-	          	<video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
-			   		<source src="{{ video.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-				</video>
-	          	<p>{{ video.file_name }}<br>Creator: {{ video.username }}<br>Category: {{ video.category }}<br>{{ video.views }} views/{{ video.likes }} likes</p>
-	        </a>
-	      </li>
-	    </div>
-	  {% endfor %}
-	</ul>
+	{% if listOfVideos %}
+		<ul class="listVideo">
+		  {% for video in listOfVideos %}
+		    <div class="listVideoElement">  
+		      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
+		        <a href="{{ url_for('video_player', video_file=video.id)}}" class="video-content-element" style="text-align: center;">
+		          	<video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
+				   		<source src="{{ video.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+					</video>
+		          	<p>{{ video.file_name }}<br>Creator: {{ video.username }}<br>Category: {{ video.category }}<br>{{ video.views }} views/{{ video.likes }} likes</p>
+		        </a>
+		      </li>
+		    </div>
+		  {% endfor %}
+		</ul>
+	{% else %}
+		<div class="alert alert-danger" role="alert">
+  			Ничего не найдено <i class="fa fa-frown-o" aria-hidden="true"></i>	
+		</div>
+	{% endif %}
 </div>
 
 <nav aria-label="Page navigation example">
