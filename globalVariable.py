@@ -32,7 +32,7 @@ QUERY_COMMANDS = {
 }
 
 
-PASSWORD_FORM = '''Password form: 
+PASSWORD_FORM = '''Password and login form: 
 1) Use only latin character, numbers and symbol '_' 
 2) Max length - 15
 3) Min length - 3'''
