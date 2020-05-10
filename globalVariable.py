@@ -24,6 +24,7 @@ QUERY_COMMANDS = {
     'search_files_or_users': "select * from files where file_name like %s or username like %s;",
     'create_news': "insert into news (header, news_text, publication_time) values (%s, %s, %s);",
     'get_articles': "select * from news limit 20;",
+    'delete_article': "delete * from news where id=%s;",
     'set_auto_increment_null': "ALTER TABLE files AUTO_INCREMENT=0;",
     'recalculate_sport_rating': "update users set rating_sport = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;",
     'recalculate_creation_rating': "update users set rating_creation = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;",
