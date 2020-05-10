@@ -4,11 +4,15 @@ import hashlib
 import datetime
 from random import randint
 from flask import Flask, request, g, abort, render_template, url_for, redirect, make_response, session
-from app import app
 import bcrypt
 import mysql.connector
 from werkzeug.utils import secure_filename
 from globalVariable import *
+
+
+app = Flask(__name__)
+app.secret_key = SECRET_KEY
+app.permanent_session_lifetime = datetime.timedelta(days=7)
 
 
 data_base = mysql.connector.connect(
@@ -357,23 +361,38 @@ def admin(command=None, user=None):
     elif request.args.get('command') == 'change_role' and request.args['user']:
         accessing_the_database(QUERY_COMMANDS['change_to_admin'], request.args['user'], changes=True)
         return redirect(url_for('admin'))
+
     return render_template('admin.html', message=message, message_to_the_users_search=message_to_the_users_search, user=user)
 
 
 @app.route('/video_player', methods=['post', 'get'])
 def video_player():
-    current_user = accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0]
+    if 'user' in session:
+        current_user = accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0]
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
+    if request.args.get('video_file') is None or not request.args.get('video_file').isdigit():
+        abort(404)
     video_file = accessing_the_database(QUERY_COMMANDS['get_file'],
-                                        int(request.args.get('video_file')))[0]
-    if request.args.get('like_button_pressed') == 'True':
+                                        int(request.args.get('video_file')))
+    if not video_file:
+        abort(404)
+    else:
+        video_file = video_file[0]
+    if 'user' in session and request.args.get('like_button_pressed') == 'True':
         if f"?{int(request.args.get('video_file'))}?" not in current_user.my_likes and video_file.username != session['user']:
             accessing_the_database(QUERY_COMMANDS['add_one_like'], int(request.args.get('video_file')), changes=True)
             accessing_the_database(QUERY_COMMANDS['add_likes_to_user'], f"{int(request.args.get('video_file'))}?", session['user'], changes=True)
             accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)  # Нужно 4 раза передать сессию
             return redirect(url_for('video_player', video_file=int(request.args.get('video_file'))))
+    elif (request.args.get('command') == 'delete_file') and ('role' in session) and session['role'] == 'admin':
+        accessing_the_database(QUERY_COMMANDS['delete_file'], video_file.id, changes=True)
+        os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file.file_path[
+                                             video_file.file_path.rfind(
+                                                 '/'):])
+        return redirect(url_for('videos', category='All categories'))
+
     else:
         if not video_file:  # Если пользователь все-таки не вставил свой id в строку поиска и такого видео нет
             abort(404)
@@ -382,7 +401,7 @@ def video_player():
                 accessing_the_database(QUERY_COMMANDS['add_one_view'], video_file.id, changes=True)
                 accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", session['user'], changes=True)
                 accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)  # Нужно 4 раза передать сессию
-    if f"?{request.args.get('video_file')}?" in current_user.my_likes or video_file.username == session['user']:
+    if 'user' in session and (f"?{request.args.get('video_file')}?" in current_user.my_likes or video_file.username == session['user']):
         like_button = 'liked'
     else:
         like_button = 'not liked'

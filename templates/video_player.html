@@ -22,13 +22,22 @@
   	<div class='like'>
   		{% if like_button == 'liked' %}
 	  		<i class="fa fa-heart-o" aria-hidden="true" style="font-size: 3ex;color: #4468AF;"> Liked!</i>
-	  		
 	  	{% else %}
 	  		<a class='like-toggle' href="{{ url_for('video_player', video_file=video_file.id, like_button_pressed=True) }}" id='hidden'><i class="fa fa-heart-o" aria-hidden="true"> Tap to like!</i></a>
-
 	  	{% endif %}
 	</div>
 	<br>
+  	{% if session['role'] == 'admin' %}
+  		<div class="dropdown" style="padding-bottom: 2ex; width: 25%;text-align: center;left: 35%">
+		  <button style="background-color: #75c3f3;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		    <span style="font-size: 1.2em;color: #4D6FBB;"><i class="fa fa-trash" aria-hidden="true"></i></span>
+		  </button>
+		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		    <a class="dropdown-item" href="{{ url_for('video_player', command='delete_file', video_file=video_file.id) }}" style="color:red;">Delete video <i class="fa fa-trash" aria-hidden="true"></i></a>
+		  </div>
+		</div>
+		
+  	{% endif %}
   </div>
   <hr>
   <div class="other-videos">
