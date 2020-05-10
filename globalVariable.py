@@ -29,13 +29,8 @@ QUERY_COMMANDS = {
     'recalculate_creation_rating': "update users set rating_creation = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;",
     'recalculate_study_rating': "update users set rating_study = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;"
 
-    # 'recalculate_rating': "update users "
-    #                       "set rating_%s = (sum(select views from files where username=%s) / sum(select likes from files where username=%s) / "
-    #                       "count(select * from files where username=%s) * 1000 DIV 1)"
-    #                       " where username=%s;"
 }
 
-  # update users set rating_sport = ((select sum(views) from files where username='admin') / (select sum(likes) from files where username='admin') / (select count(*) from files where username='admin') * 1000 DIV 1) where username='admin';
 
 PASSWORD_FORM = '''Password form: 
 1) Use only latin character, numbers and symbol '_' 

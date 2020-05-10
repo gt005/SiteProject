@@ -96,7 +96,6 @@ def verify_password_on_correct(**verifiable):
 
 
 def queryToObject(function, *args):
-    # TODO: Придумать нормальное название
     def wrapper(query, *args, changes=False):
         ''' Превращает запрос к бд в объект запрашиваемого типа '''
         if 'from users' in query:
@@ -107,7 +106,7 @@ def queryToObject(function, *args):
             type_of_object = Article
         db_answer = function(query=query, args=args, changes=changes)
         if not changes and db_answer:
-            # Формат ответа [(username, hashed_password......)]
+            # Формат ответа [(username, hashed_password......),]
             return [type_of_object(*(db_answer[i])) for i in range(len(db_answer))]
         if not db_answer:
             return []
