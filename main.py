@@ -136,6 +136,10 @@ def accessing_the_database(query, args, *other, changes=False):
 def news():
     search = findVideo()
     if search: return redirect(url_for('videos', category='search', search_string=search))
+    if request.args.get('command') is not None and request.args.get('article_id') is not None:
+        if request.args.get('article_id').isdigit() and request.args.get('command') == 'delete_article':
+            accessing_the_database(QUERY_COMMANDS['delete_article'], int(request.args.get('article_id')), changes=True)
+            return redirect(url_for('news'))
     articles = accessing_the_database(QUERY_COMMANDS['get_articles'])
     return render_template('news.html', article_list=articles[::-1])
 
