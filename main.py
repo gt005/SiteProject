@@ -138,6 +138,8 @@ def news():
 
 @app.route('/login', methods=['post', 'get'])
 def login():
+    if 'user' in session:
+        abort(403)
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
@@ -165,6 +167,8 @@ def login():
 
 @app.route('/registration', methods=['post', 'get'])
 def registration():
+    if 'user' in session:
+        abort(403)
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
@@ -198,7 +202,6 @@ def page_not_found(e):
 
 
 @app.errorhandler(403)
-@app.route('/403-page', methods=['post', 'get'])
 def have_no_permission(e):
     search = findVideo()
     if search: return redirect(
@@ -390,6 +393,9 @@ def video_player():
 
 @app.route('/add_video', methods=['post', 'get'])
 def add_new_video():
+    if not 'user' in session:
+        # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
+        abort(403)
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
