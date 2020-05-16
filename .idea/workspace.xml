@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="dee8cbeb-3e4d-45eb-8b92-0fc08b9651e8" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/globalVariable.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVariable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/preloader.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/preloader.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/js/preloader.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/preloader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/videos/1679091c5a880faf6fb5e6087eb1b2dc.MP4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/videos/37693cfc748049e45d87b8c7d8b9aacd.MP4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/404.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/404.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/add_new_video.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/add_new_video.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/news.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/news.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/profile.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/profile.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/registration.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/registration.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/scoreboard.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/scoreboard.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/video_player.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/video_player.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/videos.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/videos.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1bzaM35LZmxMqXHoSrvpWdJsJU6" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="dee8cbeb-3e4d-45eb-8b92-0fc08b9651e8" name="Default Changelist" comment="" />
+      <created>1589637324763</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1589637324763</updated>
+      <workItem from="1589637326179" duration="1993000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2000" y="25" key="#CSS" timestamp="1589637798281">
+      <screen x="1440" y="-180" width="1920" height="1080" />
+    </state>
+    <state x="2000" y="25" key="#CSS/0.0.1440.900/1440.-180.1920.1080@1440.-180.1920.1080" timestamp="1589637798281" />
+    <state x="1540" y="-80" width="1720" height="880" key="DiffContextDialog" timestamp="1589637754585">
+      <screen x="1440" y="-180" width="1920" height="1080" />
+    </state>
+    <state x="1540" y="-80" width="1720" height="880" key="DiffContextDialog/0.0.1440.900/1440.-180.1920.1080@1440.-180.1920.1080" timestamp="1589637754585" />
+  </component>
+</project>

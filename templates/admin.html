@@ -10,6 +10,7 @@
 
 {% block content_title %}
 	<span style="position: absolute !important;left: 50%;transform: translateX(-50%) !important;">Admin panel</span>
+	<br>
 {% endblock %}
 
 {% block content %}
@@ -30,9 +31,8 @@
 		<input type="submit" name="add-news" value="Share!">
 	</form>
 </div>
-<hr style="position: absolute;width: 100%;left:0px;">
-<hr style="position: absolute;width: 100%;left:0px;">
-<div class="add-news">
+<hr style="position: relative;width: 100%;left:0px;height: 2px;">
+<div class="user-settings" style="text-align: center;">
 	<h2>Users settings</h2>
 		{% if message_to_the_users_search %}
 			<div class="alert alert-danger" role="alert">

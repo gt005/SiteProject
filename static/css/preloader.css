@@ -15,9 +15,12 @@
     top: 50%;
     width: 100%;
     position: absolute;
-    transform: translateY(-50%);
+    transform: translate(-50%, -50%);
     text-align: center;
-    
+    display: flex;
+    left: 50%;
+    justify-content: center
+
 }
 .eye {
     width: 20ex;
@@ -38,6 +41,6 @@
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    border: .75em solid #333;  
+    border: .75em solid #333;
 }
 

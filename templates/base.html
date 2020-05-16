@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="private">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/preloader.css', v=1)}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for( 'static', filename='css/preloader.css', v=1, cache_del=(range(1, 51) | random))}}">
     <script src="https://kit.fontawesome.com/65f48fc481.js" crossorigin="anonymous"></script>
 
     {% block head %}
@@ -19,17 +21,22 @@
         {% endblock %} | The Sun
     </title>
 </head>
-<body>
 
+<body class="page dark-theme">
 <div id="page-preloader" class="preloader">
   <div class="eyes">
     <div class="eye">
       <div class="ball"></div>
     </div>
+    <span id="preloader_proc">
+      0%
+    </span>
     <div class="eye">
       <div class="ball"></div>
     </div>
+    
   </div>
+  
 </div>
 
 <script>
@@ -44,10 +51,11 @@
     }
   }
 </script>
-<script src="../../static/js/preloader.js" ></script>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="{{ url_for('news') }}">The Sun</a>
-  
+  <img src="https://img.icons8.com/emoji/48/000000/sun-emoji.png"/>
+  <a class="navbar-brand" href="{{ url_for('news') }}">The sun</a>
+
   <div class="collapse navbar-collapse show" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
@@ -81,6 +89,9 @@
           <a class="nav-link" href="{{ url_for('logout') }}"><i class="fa fa-sign-out" aria-hidden="true"></i> log out</a>
         </li>
       {% endif %}
+      <li class="nav-item">
+        <span class="nav-link" id="change-theme-label"><i class="fa fa-moon-o" aria-hidden="true"></i> Change theme</span>
+      </li>
     </ul>
     <form class="form-inline my-2 my-lg-0" method="post">
       <input class="form-control mr-sm-2" type="search" placeholder="Search a video" aria-label="Search" name="search_string">
@@ -102,5 +113,9 @@
         {% endblock %}
     </div>
 </div>
+<script src="../../static/js/preloader.js" ></script>
+<script src="../../static/js/main.js" ></script>
 </body>
 </html>
+
+

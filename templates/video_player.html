@@ -21,7 +21,7 @@
 	<p>{{ video_file.views }} views/{{ video_file.likes }} likes</p>
   	<div class='like'>
   		{% if like_button == 'liked' %}
-	  		<i class="fa fa-heart-o" aria-hidden="true" style="font-size: 3ex;color: #4468AF;"> Liked!</i>
+  			<a class='like-toggle' href="{{ url_for('video_player', video_file=video_file.id, like_button_pressed=True) }}" id='hidden'><i class="fa fa-heart-o" style="font-size: 3ex;color: #4468AF;" aria-hidden="true"> Liked!</i></a>
 	  	{% else %}
 	  		<a class='like-toggle' href="{{ url_for('video_player', video_file=video_file.id, like_button_pressed=True) }}" id='hidden'><i class="fa fa-heart-o" aria-hidden="true"> Tap to like!</i></a>
 	  	{% endif %}
@@ -33,10 +33,10 @@
 		    <span style="font-size: 1.2em;color: #4D6FBB;"><i class="fa fa-trash" aria-hidden="true"></i></span>
 		  </button>
 		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-		    <a class="dropdown-item" href="{{ url_for('video_player', command='delete_file', video_file=video_file.id) }}" style="color:red;">Удалить видео <i class="fa fa-trash" aria-hidden="true"></i></a>
+		    <a class="dropdown-item" href="{{ url_for('video_player', command='delete_file', video_file=video_file.id) }}" style="color:red;">Delete video <i class="fa fa-trash" aria-hidden="true"></i></a>
 		  </div>
 		</div>
-		
+
   	{% endif %}
   </div>
   <hr>
@@ -47,7 +47,7 @@
   	<div class="VideoContent">
 	<ul class="listVideo">
 	  {% for video in listOfVideos %}
-	    <div class="listVideoElement">  
+	    <div class="listVideoElement">
 	      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
 	        <a href="{{ url_for('video_player', video_file=video.id)}}" class="video-content-element" style="text-align: center;">
 	          	<video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">

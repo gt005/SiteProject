@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content_title %}
-<span style="position: absolute !important;left: 50%;transform: translateX(-50%) !important;">{{ session['user'] }}, It is your profile!</span>
+
 {% endblock %}
 
 {% block content %}
@@ -18,7 +18,7 @@
 		<img src="../static/images/profile_photos/{{ file_name }}" alt="" class="profile-image">
 		{% if message == "Success" %}
 			<div class="alert alert-success" role="alert">
-	  			Profile photo successfully updated! Reload page to see changes!
+	  			Profile photo successfully updated!
 			</div>
 	  	{% elif message %}
 	  		<div class="alert alert-danger" role="alert">
@@ -26,10 +26,10 @@
 	  		</div>
 		{% endif %}
 		<p style="text-align: center;">Here you can change your profile picture</p>
-		<form class="box" action="" method="post" enctype="multipart/form-data" style="width: 100%;padding: 2ex;">
+		<form class="box" action="" method="post" enctype="multipart/form-data" style="width: 100%;padding: 2ex;top:0;">
 			<input type="file" name="file" multiple accept="image/*,image/jpeg" class="custom-file-input" id="customFile">
 			<label class="custom-file-label" for="customFile">Choose file</label>
-			<input type="submit" value='Change'>
+			<input type="submit" name="send_profile_photo" value='Change'>
 		</form>
 	</div>
 	<div class="profile-videos">
@@ -38,14 +38,18 @@
 			<ul class="profile-video-list">
 				{% for oneVideoFromList in listOfMyVideosForProfile %}
 					<li class="profile-video-list-element">
-						<video width="80%" height="100%" controls="controls" style="position: relative;">
+						<video width="80%" height="100%" preload="metadata" controls="controls" style="position: relative;max-width: 10cm;">
 				  			<source src="{{ oneVideoFromList.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                            <source src="{{ oneVideoFromList.file_path }}" class="opened-video" type='video/ogg; codecs="theora, vorbis"'>
+                            <source src="{{ oneVideoFromList.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+                            <source src="{{ oneVideoFromList.file_path }}" class="opened-video" type='video/webm; codecs="vp8, vorbis"'>
+                            Тег video не поддерживается вашим браузером.
 						</video>
 		        		<a href="{{ url_for('video_player', video_file=oneVideoFromList.id)}}" class="video-content-element">
 		          			<p>{{ oneVideoFromList.file_name }}</p>
 		        		</a>
 
-						<div class="dropdown" style="padding-bottom: 2ex; width: 25%;text-align: center;left: 35%">
+						<div class="dropdown" style="padding-bottom: 2ex; width: 25%;text-align: center;left: 37%">
 						  <button style="background-color: #75c3f3;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						    <span style="font-size: 1.2em;color: #4D6FBB;"><i class="fa fa-question" aria-hidden="true"></i></span>
 						  </button>
@@ -63,7 +67,7 @@
 				{% endfor %}
 			</ul>
 		{% else %}
-			<div class="alert alert-danger" role="alert" style="top: 10em;left: 10em;position: absolute;">
+			<div class="alert alert-danger" style="transform: translateY(50%);" role="alert">
 	  			You don't have any videos
 	  		</div>
 		{% endif %}

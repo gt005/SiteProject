@@ -25,18 +25,18 @@ QUERY_COMMANDS = {
     'create_news': "insert into news (header, news_text, publication_time) values (%s, %s, %s);",
     'get_articles': "select * from news limit 20;",
     'delete_article': "delete from news where id=%s;",
-    'set_auto_increment_null': "ALTER TABLE files AUTO_INCREMENT=0;",
+    'set_auto_increment': "ALTER TABLE files AUTO_INCREMENT=%s;",
     'recalculate_sport_rating': "update users set rating_sport = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;",
     'recalculate_creation_rating': "update users set rating_creation = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;",
-    'recalculate_study_rating': "update users set rating_study = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;"
-
+    'recalculate_study_rating': "update users set rating_study = ((select sum(likes) from files where username=%s and category=%s) / (select sum(views) from files where username=%s and category=%s) / (select count(*) from files where username=%s and category=%s) * 1000 DIV 1) where username=%s;",
+    'get_auto_increment': "SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name = %s and table_schema = 'gt005$TheSunDB';",
+    'set_like_to_user': "update users set my_likes=%s where username=%s;"
 }
 
-
-PASSWORD_FORM = '''Password and login form: 
-1) Use only latin character, numbers and symbol '_' 
-2) Max length - 15
-3) Min length - 3'''
+PASSWORD_FORM = '''Password and login form:
+1) Use only latin character, numbers and symbol '_', '-' or space
+2) Max length - 30
+3) Min length- 3'''
 
 SECRET_KEY = "BsKdQOcKBGAiScVZHkWovfitWBDEwIwi"
 
@@ -44,5 +44,8 @@ ALLOWED_IMAGE_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 ALLOWED_VIDEO_EXTENSIONS = set(['mp4', 'mov', 'avi', 'wmv', 'asf', 'webm', 'm4v'])
 
-UPLOAD_FOLDER_FOR_PROFILE_IMAGE = '/Users/karimhamid/PycharmProjects/SiteProject/flask_app/static/images/profile_photos/'
-UPLOAD_FOLDER_FOR_VIDEOS = '/Users/karimhamid/PycharmProjects/SiteProject/flask_app/static/videos/'
+UPLOAD_FOLDER_FOR_PROFILE_IMAGE = '/home/gt005/mysite/SiteProject/static/images/profile_photos/'
+UPLOAD_FOLDER_FOR_VIDEOS = '/home/gt005/mysite/SiteProject/static/videos/'
+
+MAX_PHOTO_FILE_SIZE = 1024 * 1024 * 2 + 1
+MAX_VIDEO_FILE_SIZE = 1024 * 1024 * 10 + 1

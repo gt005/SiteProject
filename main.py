@@ -9,7 +9,6 @@ import mysql.connector
 from werkzeug.utils import secure_filename
 from globalVariable import *
 
-
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 app.permanent_session_lifetime = datetime.timedelta(days=7)
@@ -19,11 +18,13 @@ data_base = mysql.connector.connect(
     # Конфигурация моей базы данных, у тебя не будет работать, надо менять
     host='localhost',
     user='root',
+    connect_timeout=28800,
     passwd='gt005gt005',
     database='sitedb'
 )
 
 db_cursor = data_base.cursor()
+
 
 
 class User():
@@ -58,19 +59,27 @@ class Article():
         self.publication_time = args[3]
 
 
-def upload_file(file, upload_folder, file_type, *args, last_id=None, file_object=None):
+class SingleAnswer():
+    def __init__(self, *args):
+        self.answer = args[0]
+
+
+def upload_file(file, upload_folder, file_type, file_bytes, *args, last_id=None):
     if not file:
         return 'Choose a file.'
     if not allowed_file(file.filename, file_type):
         return 'Invalid file name.'
-    if file and allowed_file(file.filename, file_type) and file_type == 'image':
+    if file_type == 'image':
         filename = secure_filename(file.filename)
-        file.save(os.path.join(upload_folder, hashlib.md5(bytes(session['user'], encoding='utf-8')).hexdigest() + '.png'))
+        with open(os.path.join(upload_folder, hashlib.md5(bytes(session['user'], encoding='utf-8')).hexdigest() + '.png'), 'wb') as file_to_save:
+            file_to_save.write(file_bytes)
         return 'Success'
-    elif file and allowed_file(file.filename, file_type) and file_type == 'video':
-        file.save(os.path.join(upload_folder, hashlib.md5(
+    elif file_type == 'video':
+        with open(os.path.join(upload_folder, hashlib.md5(
                          bytes(str(last_id + 1), encoding='utf-8')).hexdigest() \
-                     + file.filename[file.filename.rfind('.'):]))
+                     + file.filename[file.filename.rfind('.'):]), 'wb') as file_to_save:
+            file_to_save.write(file_bytes)
+
         return 'Success'
 
 
@@ -90,7 +99,7 @@ def verify_password_on_correct(**verifiable):
         подходит ли строка или нет.
     """
     result = dict()
-    expression = re.compile(r'[a-zA-Z0-9_]{3,15}$')  # Сверяет разрешенные символы и длину
+    expression = re.compile(r'[a-zA-Z0-9_\s-]{3,30}$')  # Сверяет разрешенные символы и длину
     for key, element in verifiable.items():
         if expression.match(element):  # Проходит проверку или нет
             result[key] = True
@@ -108,7 +117,11 @@ def queryToObject(function, *args):
             type_of_object = File
         elif 'from news' in query:
             type_of_object = Article
+        elif 'AUTO_INCREMENT' in query:
+            type_of_object = SingleAnswer
+
         db_answer = function(query=query, args=args, changes=changes)
+
         if not changes and db_answer:
             # Формат ответа [(username, hashed_password......),]
             return [type_of_object(*(db_answer[i])) for i in range(len(db_answer))]
@@ -125,7 +138,23 @@ def findVideo(*args):
 
 @queryToObject  # Вызывая эту функцию(accessing_the_database), будет выполняться queryToObject
 def accessing_the_database(query, args, *other, changes=False):
+    ''' Вот этот ужас нормально бы работас с try/except, но нам нельзя менять глобальные переменные...
+        Проблема в том, что каждые минут 10 база данных отключается.
+        except mysql.connector.errors.InterfaceError решил бы проблему частично,
+        но тогда придется заменять глобальную переменную db_cursor
+    '''
+    data_base = mysql.connector.connect(
+        # Конфигурация моей базы данных, у тебя не будет работать, надо менять
+        host='localhost',
+        user='root',
+        passwd='gt005gt005',
+        database='sitedb'
+    )
+
+    db_cursor = data_base.cursor()
+
     db_cursor.execute(query, args)  # Выполняет запрос
+
     if changes:
         data_base.commit()  # Подтверждает изменения в базе данных
         return None
@@ -269,23 +298,35 @@ def videos(category):
         category = 'Search for: ' + request.args.get('search_string')
     else:
         abort(404)
-
+    
     amount_of_pages = (len(listOfVideos) + 6 - 1) // 6
     listOfVideos = listOfVideos[page * 6: page * 6 + 6]
 
     if listOfVideos is None:
         listOfVideos = ''
+
     return render_template('videos.html', category=category, amount_of_pages=amount_of_pages, page='page - ' + str(page + 1), listOfVideos=listOfVideos)
 
 
 @app.route('/profile', methods=['post', 'get'])
 def profile():
     search = findVideo()
+    message = ''
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
     if not 'user' in session:
         # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
+    if request.method == 'POST':
+        print(request.files.get('file'), request.form.get('send_profile_photo'), )
+        if request.files and request.form.get('send_profile_photo') is not None:
+            file = request.files['file']
+            if bool(file.filename):
+                file_bytes = file.read(MAX_PHOTO_FILE_SIZE)
+                if  len(file_bytes) == MAX_PHOTO_FILE_SIZE:
+                    message = 'File is bigger than 2 Mb.'
+                    return render_template('add_new_video.html', message=message)
+            message = upload_file(file, UPLOAD_FOLDER_FOR_PROFILE_IMAGE, 'image', file_bytes)
     if request.args.get('command') == 'delete_file':
         if request.args.get('video_file_id'):
             video_file = request.args.get('video_file_id')
@@ -303,11 +344,6 @@ def profile():
         file_name = 'standard_image.png'
     else:
         file_name =  hashlib.md5(bytes(session['user'], encoding='utf-8')).hexdigest() + '.png'
-    message = ''
-    if request.method == 'POST':
-        if request.files:
-            file = request.files['file']
-            message = upload_file(file, UPLOAD_FOLDER_FOR_PROFILE_IMAGE, 'image')
 
     listOfMyVideosForProfile = accessing_the_database(QUERY_COMMANDS['get_user_files'], session['user'])
     return render_template('profile.html', message=message, file_name=file_name, listOfMyVideosForProfile=listOfMyVideosForProfile)
@@ -349,7 +385,7 @@ def admin(command=None, user=None):
             if not user:
                 message_to_the_users_search = 'Empty username'
             else:
-                user = accessing_the_database(QUERY_COMMANDS['get_several_users'], user + '%', session['user'])
+                user = accessing_the_database(QUERY_COMMANDS['get_several_users'], '%' + user + '%', session['user'])
                 if not user:
                     message_to_the_users_search = 'Users not found'
     elif request.args.get('command') == 'delete' and request.args['user']:
@@ -365,7 +401,6 @@ def admin(command=None, user=None):
     elif request.args.get('command') == 'change_role' and request.args['user']:
         accessing_the_database(QUERY_COMMANDS['change_to_admin'], request.args['user'], changes=True)
         return redirect(url_for('admin'))
-
     return render_template('admin.html', message=message, message_to_the_users_search=message_to_the_users_search, user=user)
 
 
@@ -384,17 +419,27 @@ def video_player():
         abort(404)
     else:
         video_file = video_file[0]
-    if 'user' in session and request.args.get('like_button_pressed') == 'True':
-        if f"?{int(request.args.get('video_file'))}?" not in current_user.my_likes and video_file.username != session['user']:
+    if 'user' in session and (request.args.get('like_button_pressed') == 'True') and video_file.username != session['user']:
+        if f"?{int(request.args.get('video_file'))}?" not in current_user.my_likes:
             accessing_the_database(QUERY_COMMANDS['add_one_like'], int(request.args.get('video_file')), changes=True)
             accessing_the_database(QUERY_COMMANDS['add_likes_to_user'], f"{int(request.args.get('video_file'))}?", session['user'], changes=True)
             accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)  # Нужно 4 раза передать сессию
             return redirect(url_for('video_player', video_file=int(request.args.get('video_file'))))
+        else:
+            place_of_like = current_user.my_likes.find('?' + str(request.args.get('video_file')) + '?')
+            current_user.my_likes = current_user.my_likes[:place_of_like] + \
+                                    current_user.my_likes[place_of_like + len(str(request.args.get('video_file'))) - 1:]
+            accessing_the_database(QUERY_COMMANDS['set_like_to_user'], current_user.my_likes, current_user.username, changes=True)
+            accessing_the_database(QUERY_COMMANDS['remove_like'], int(
+                request.args.get('video_file')), changes=True)
+            return redirect(url_for('video_player', video_file=int(
+                request.args.get('video_file'))))
     elif (request.args.get('command') == 'delete_file') and ('role' in session) and session['role'] == 'admin':
         accessing_the_database(QUERY_COMMANDS['delete_file'], video_file.id, changes=True)
         os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file.file_path[
                                              video_file.file_path.rfind(
                                                  '/'):])
+        accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)
         return redirect(url_for('videos', category='All categories'))
 
     else:
@@ -428,17 +473,23 @@ def add_new_video():
         if request.files['video_file']:
             if video_name:
                 file = request.files['video_file']
+                if bool(file.filename):
+                    file_bytes = file.read(MAX_VIDEO_FILE_SIZE)
+                    if  len(file_bytes) == MAX_VIDEO_FILE_SIZE:
+                        message = 'File is bigger than 10 Mb.'
+                        return render_template('add_new_video.html',
+                                               message=message)
                 category = request.form.get('category')
-                last_id = accessing_the_database(QUERY_COMMANDS['get_last_file_id'])  # смотрим последний id, чтобы добавить по имени md5(id + 1), что позволит создать уникальные названия
-                if not last_id:
-                    accessing_the_database(QUERY_COMMANDS['set_auto_increment_null'], changes=True)
-                    last_id = 0
-                else:
-                    last_id = last_id[0].id
+                if (category not in ("Sport", "Creation", "Study")):
+                    message = "Wrong category."
+                    return render_template('add_new_video.html',
+                                               message=message)
+                last_id = (accessing_the_database(QUERY_COMMANDS['get_auto_increment'], 'files')[0].answer) - 1  # смотрим последний id, чтобы добавить по имени md5(id + 1), что позволит создать уникальные названия
+
                 new_video_file = File(last_id + 1, session['user'], video_name, category, 0, 0, os.path.join('../static/videos/',
                                              hashlib.md5(bytes(str(last_id + 1), encoding='utf-8')).hexdigest() \
                                              + file.filename[file.filename.rfind('.'):]))
-                message = upload_file(file, UPLOAD_FOLDER_FOR_VIDEOS, 'video', new_video_file, last_id=last_id)
+                message = upload_file(file, UPLOAD_FOLDER_FOR_VIDEOS, 'video', file_bytes, last_id=last_id)
                 if message == 'Success':
                     accessing_the_database(QUERY_COMMANDS['create_file'], session['user'], video_name, category, new_video_file.file_path, changes=True)
             else:
@@ -448,6 +499,12 @@ def add_new_video():
 
     return render_template('add_new_video.html', message=message)
 
+@app.after_request
+def add_header(r):
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'privat, max-age=0'
+    return r
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+app.run(debug=True)
