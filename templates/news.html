@@ -31,7 +31,7 @@
 				{% if session['role'] == 'admin' %}
 			  		<div class="dropdown" style="padding-bottom: 2ex; width: 25%;text-align: center;left: 38%">
 					  <button style="background: none;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					    <span style="font-size: 1.2em;color: #4D6FBB;"><i class="fa fa-trash" aria-hidden="true"></i></span>
+					    <span id="trash-news" style="font-size: 1.2em;"><i class="fa fa-trash" aria-hidden="true"></i></span>
 					  </button>
 					  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 					    <a class="dropdown-item" href="{{ url_for('news', command='delete_article', article_id=article.id) }}" style="color:red;">Delete an article <i class="fa fa-trash" aria-hidden="true"></i></a>

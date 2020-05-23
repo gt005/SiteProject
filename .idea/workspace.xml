@@ -2,15 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="dee8cbeb-3e4d-45eb-8b92-0fc08b9651e8" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/globalVariable.py" beforeDir="false" afterPath="$PROJECT_DIR$/globalVariable.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/css/preloader.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/preloader.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/css/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/static/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/main.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/js/preloader.js" beforeDir="false" afterPath="$PROJECT_DIR$/static/js/preloader.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/videos/1679091c5a880faf6fb5e6087eb1b2dc.MP4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/static/videos/37693cfc748049e45d87b8c7d8b9aacd.MP4" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/404.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/404.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/videos/1c383cd30b7c298ab50293adfecb7b18.MP4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/videos/45c48cce2e2d7fbdea1afc51c7c6ad26.MP4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/videos/e369853df766fa44e1ed0ff613f563bd.MP4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/403.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/403.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/add_new_video.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/add_new_video.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/admin.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/templates/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/base.html" afterDir="false" />
@@ -40,6 +41,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.gutterIcons" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -51,7 +53,11 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1589637324763</updated>
-      <workItem from="1589637326179" duration="1993000" />
+      <workItem from="1589637326179" duration="5771000" />
+      <workItem from="1590163746842" duration="3935000" />
+      <workItem from="1590178293032" duration="3000" />
+      <workItem from="1590179025922" duration="1718000" />
+      <workItem from="1590230710466" duration="9254000" />
     </task>
     <servers />
   </component>
@@ -63,9 +69,17 @@
       <screen x="1440" y="-180" width="1920" height="1080" />
     </state>
     <state x="2000" y="25" key="#CSS/0.0.1440.900/1440.-180.1920.1080@1440.-180.1920.1080" timestamp="1589637798281" />
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1590165248019">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="184" y="112" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1440.900@0.0.1440.900" timestamp="1590165248019" />
     <state x="1540" y="-80" width="1720" height="880" key="DiffContextDialog" timestamp="1589637754585">
       <screen x="1440" y="-180" width="1920" height="1080" />
     </state>
     <state x="1540" y="-80" width="1720" height="880" key="DiffContextDialog/0.0.1440.900/1440.-180.1920.1080@1440.-180.1920.1080" timestamp="1589637754585" />
+    <state x="221" y="89" key="SettingsEditor" timestamp="1590163930827">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="221" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1590163930827" />
   </component>
 </project>

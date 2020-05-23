@@ -18,13 +18,23 @@
       {{ video_file.file_name  }}
     </h1>
     Creator: {{ video_file.username }}
-	<p>{{ video_file.views }} views/{{ video_file.likes }} likes</p>
+	  <p>{{ video_file.views }} views/<span id="likesAmount">{{ video_file.likes }}</span> likes</p>
   	<div class='like'>
-  		{% if like_button == 'liked' %}
-  			<a class='like-toggle' href="{{ url_for('video_player', video_file=video_file.id, like_button_pressed=True) }}" id='hidden'><i class="fa fa-heart-o" style="font-size: 3ex;color: #4468AF;" aria-hidden="true"> Liked!</i></a>
-	  	{% else %}
-	  		<a class='like-toggle' href="{{ url_for('video_player', video_file=video_file.id, like_button_pressed=True) }}" id='hidden'><i class="fa fa-heart-o" aria-hidden="true"> Tap to like!</i></a>
-	  	{% endif %}
+		{% if 'user' is in session and session['user'] != video_file.username %}
+			{% if like_button == "liked" %}
+					<i class="fas fa-heart" id="likeButton">
+						<span class="like-label">
+								Remove like
+						</span>
+					</i>
+			{% elif like_button == "not liked" %}
+				<i class="fa fa-heart-o" id="likeButton">
+						<span class="like-label">
+								Set like
+						</span>
+				</i>
+			{% endif %}
+		{% endif %}
 	</div>
 	<br>
   	{% if session['role'] == 'admin' %}
@@ -45,20 +55,58 @@
   		Other interesting videos:
   	</h2>
   	<div class="VideoContent">
-	<ul class="listVideo">
-	  {% for video in listOfVideos %}
-	    <div class="listVideoElement">
-	      <li style="list-style-type: none;overflow: hidden;align-items:  center;">
-	        <a href="{{ url_for('video_player', video_file=video.id)}}" class="video-content-element" style="text-align: center;">
-	          	<video width="80%" height="100%" controls="controls" style="left: 10%;position: relative;">
-			   		<source src="{{ video.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
-				</video>
-	          	<p>{{ video.file_name }}<br>Creator: {{ video.username }}<br>Category: {{ video.category }}<br>{{ video.views }} views/{{ video.likes }} likes</p>
-	        </a>
-	      </li>
-	    </div>
-	  {% endfor %}
-	</ul>
-</div>
+  		{% if listOfVideos %}
+			<ul class="listVideo">
+			  {% for video in listOfVideos %}
+			    <div class="listVideoElement">
+		      <li style="list-style-type: none;overflow: hidden;align-items: center;min-width: 7cm;">
+		        <a href="{{ url_for('video_player', video_file=video.id)}}" class="video-content-element" style="text-align: center;">
+		          	<video width="80%" height="100%" controls="controls" preload="metadata" style="left: 10%;position: relative;min-width: 5cm;">
+				   		<source src="{{ video.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
+					</video>
+		          	<p id="video-text">{{ video.file_name }}<br>Creator: {{ video.username }}<br>Category: {{ video.category }}<br>{{ video.views }} views/{{ video.likes }} likes</p>
+		        </a>
+		      </li>
+		    </div>
+			  {% endfor %}
+			</ul>
+		{% else %}
+			<div class="alert alert-danger" role="alert">
+	  			Nothing found <i class="fa fa-frown-o" aria-hidden="true"></i>
+			</div>
+		{% endif %}
+	</div>
   </div>
+{% if 'user' in session and session['user'] != video_file.username %}
+	<script>
+		let likeButton = document.querySelector('#likeButton'),
+			likeLabel = document.querySelector('.like-label'),
+			likesAmountLabel = document.querySelector('#likesAmount');
+		likeButton.onclick = function ()
+		{
+			if (likeButton.classList.contains('fa-heart-o'))
+			{
+				likesAmountLabel.textContent++;
+				likeButton.className = "fas fa-heart";
+				likeLabel.textContent = "Remove like";
+			}
+			else
+			{
+				likesAmountLabel.textContent--;
+				likeButton.className = "fa fa-heart-o";
+				likeLabel.textContent = "Set like";
+			}
+			fetch(document.location.href, {
+				method: 'post',
+				headers: {
+					'Accept': 'application/json, text/plain, */*',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					like_button_pressed: "True"
+				})
+			})
+		}
+	</script>
+{% endif %}
 {% endblock %}

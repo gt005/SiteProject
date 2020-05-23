@@ -26,6 +26,9 @@
 	  		</div>
 		{% endif %}
 		<p style="text-align: center;">Here you can change your profile picture</p>
+		<div class="alert alert-primary" role="alert">
+  			Max size of photo - 2 Mb!
+		</div>
 		<form class="box" action="" method="post" enctype="multipart/form-data" style="width: 100%;padding: 2ex;top:0;">
 			<input type="file" name="file" multiple accept="image/*,image/jpeg" class="custom-file-input" id="customFile">
 			<label class="custom-file-label" for="customFile">Choose file</label>
@@ -38,7 +41,7 @@
 			<ul class="profile-video-list">
 				{% for oneVideoFromList in listOfMyVideosForProfile %}
 					<li class="profile-video-list-element">
-						<video width="80%" height="100%" preload="metadata" controls="controls" style="position: relative;max-width: 10cm;">
+						<video width="80%" height="100%" poster="{{ oneVideoFromList.file_path.rsplit('.', 1)[0] + '.jpg' }}" preload="none" controls="controls" style="position: relative;max-width: 10cm;">
 				  			<source src="{{ oneVideoFromList.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
                             <source src="{{ oneVideoFromList.file_path }}" class="opened-video" type='video/ogg; codecs="theora, vorbis"'>
                             <source src="{{ oneVideoFromList.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
@@ -73,5 +76,17 @@
 		{% endif %}
 	</div>
 </div>
-
+<script>
+	const profilePhotoInput = document.querySelector('#customFile'),
+			labelForProfilePhotoInput = document.querySelector('.custom-file-label');
+	profilePhotoInput.onchange = function () {
+		let fileName = this.value;
+		if (fileName !== "") {
+			labelForProfilePhotoInput.textContent = "File selected";
+		}
+		else {
+			labelForProfilePhotoInput.textContent = "Choose file";
+		}
+	}
+</script>
 {% endblock %}

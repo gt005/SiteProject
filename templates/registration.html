@@ -17,12 +17,20 @@
     {{ message}}
   </div>
   {% endif %}
+  <div class="alert alert-primary" role="alert">
+    Password form:
+    1) Min one lowercase letter
+    2) Min one uppercase letter
+    3) Min one digit
+    4) Min length- 6
+    5) Max length - 20
+  </div>
   <input type="text" name="username" placeholder="Username" value="">
   <input type="password" name="password" placeholder="Password">
   <input type="password" name="rep_password" placeholder="Repeat password">
   <input type="submit" name="do_signup" value="Sign up">
   <div>
-    <button style="background: none; border: 0;"><a href="{{ url_for('login') }}" class="url">Already have account?</a></button>
+    <a href="{{ url_for('login') }}" class="url">Already have account?</a>
   </div>
 </form>
 {% endblock %}

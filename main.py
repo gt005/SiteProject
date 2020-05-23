@@ -1,5 +1,6 @@
 import os
 import re
+import cv2
 import hashlib
 import datetime
 from random import randint
@@ -8,6 +9,7 @@ import bcrypt
 import mysql.connector
 from werkzeug.utils import secure_filename
 from globalVariable import *
+
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
@@ -161,8 +163,27 @@ def accessing_the_database(query, args, *other, changes=False):
     return db_cursor.fetchall()  # Достает то, что вернул запрос
 
 
+def createPoster(file):
+    file = file.file_path[3:]
+    cam = cv2.VideoCapture(file)
+    ret, frame = cam.read()
+    if ret:
+        name = file.rsplit('.', 1)[0] + '.jpg'
+        cv2.imwrite(name, frame)
+    cam.release()
+    cv2.destroyAllWindows()
+    return None
+
+
+def redirectToDevelopmentPage():
+    if DEVELOPMENT_MODE and (session.get('role') != 'admin'):
+        return redirect(url_for('development_page'))
+
+
 @app.route('/', methods=['post', 'get'])
 def news():
+    redirectToDevelopmentPage()
+    return redirect(url_for('development_page'))
     search = findVideo()
     if search: return redirect(url_for('videos', category='search', search_string=search))
     if request.args.get('command') is not None and request.args.get('article_id') is not None:
@@ -175,6 +196,7 @@ def news():
 
 @app.route('/login', methods=['post', 'get'])
 def login():
+    redirectToDevelopmentPage()
     if 'user' in session:
         abort(403)
     search = findVideo()
@@ -204,6 +226,7 @@ def login():
 
 @app.route('/registration', methods=['post', 'get'])
 def registration():
+    redirectToDevelopmentPage()
     if 'user' in session:
         abort(403)
     search = findVideo()
@@ -218,13 +241,10 @@ def registration():
             message = 'Empty login or one of passwords.'
         elif accessing_the_database(QUERY_COMMANDS['get_user'], username):  # None, если нет таких пользователей
             message = 'User with the same name already exist.'
-        elif not all(verify_password_on_correct(
-                username=username, password=password,
-                rep_password=rep_password).values()):
-            # Если хоть один не проходит проверку функцией verify_password_on_correct
-            message = PASSWORD_FORM
         elif rep_password != password:
             message = 'Passwords are not equal.'
+        elif not (verify_password_on_correct(username=username)['username'] and NEW_PASSWORD_EXPRESSION.match(password)):
+            message = "Incorrect password form."
         else:
             accessing_the_database(QUERY_COMMANDS['add_user'], username, bcrypt.hashpw(bytes(password, encoding='utf-8'), bcrypt.gensalt()).decode('utf-8'), changes=True)
             session['user'] = username  # Ставит cookie сессии
@@ -235,11 +255,13 @@ def registration():
 
 @app.errorhandler(404)
 def page_not_found(e):
+    redirectToDevelopmentPage()
     return render_template('404.html')
 
 
 @app.errorhandler(403)
 def have_no_permission(e):
+    redirectToDevelopmentPage()
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
@@ -248,6 +270,7 @@ def have_no_permission(e):
 
 @app.route('/scoreboard', methods=['post', 'get'])
 def scoreboard():
+    redirectToDevelopmentPage()
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
@@ -273,6 +296,7 @@ def scoreboard():
 
 @app.route('/videos/<category>', methods=['post', 'get'])
 def videos(category):
+    redirectToDevelopmentPage()
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
@@ -310,6 +334,7 @@ def videos(category):
 
 @app.route('/profile', methods=['post', 'get'])
 def profile():
+    redirectToDevelopmentPage()
     search = findVideo()
     message = ''
     if search: return redirect(
@@ -334,7 +359,9 @@ def profile():
             if video_file_object.username != session['user']:
                 abort(403)
                 return ''
-            os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file_object.file_path[video_file_object.file_path.rfind('/'):])  # отрезаем только название
+            video_file_path = UPLOAD_FOLDER_FOR_VIDEOS + video_file_object.file_path[video_file_object.file_path.rfind('/') + 1:]
+            os.remove(video_file_path)  # отрезаем только название
+            os.remove(video_file_path.rsplit('.', 1)[0] + '.jpg')
             accessing_the_database(QUERY_COMMANDS['delete_file'], video_file_object.id, changes=True)
             accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file_object.category.lower()}_rating'], *([video_file_object.username, video_file_object.category] * 3), video_file_object.username, changes=True)  # Нужно 4 раза передать сессию
             return redirect(url_for('profile'))
@@ -351,6 +378,7 @@ def profile():
 
 @app.route('/logout', methods=['post', 'get'])
 def logout():
+    redirectToDevelopmentPage()
     session.pop("user", None)    # Удаляет cookie сессии
     session.pop("role", None)
     return redirect(url_for('news'))
@@ -358,6 +386,7 @@ def logout():
 
 @app.route('/admin', methods=['post', 'get'])
 def admin(command=None, user=None):
+    redirectToDevelopmentPage()
     search = findVideo()
     if search: return redirect(
         url_for('videos', category='search', search_string=search))
@@ -390,7 +419,9 @@ def admin(command=None, user=None):
                     message_to_the_users_search = 'Users not found'
     elif request.args.get('command') == 'delete' and request.args['user']:
         for video_file_object in accessing_the_database(QUERY_COMMANDS['get_user_files'], request.args['user']):
-            os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file_object.file_path[video_file_object.file_path.rfind('/'):])  # отрезаем только название
+            video_file_path = UPLOAD_FOLDER_FOR_VIDEOS + video_file_object.file_path[video_file_object.file_path.rfind('/'):]
+            os.remove(video_file_path)
+            os.remove(video_file_path.rsplit('.', 1)[0] + '.jpg')
             accessing_the_database(QUERY_COMMANDS['delete_file'],
                                    video_file_object.id, changes=True)
         if os.path.exists(os.path.join(UPLOAD_FOLDER_FOR_PROFILE_IMAGE, hashlib.md5(bytes(request.args['user'], encoding='utf-8')).hexdigest() + '.png')):
@@ -406,6 +437,7 @@ def admin(command=None, user=None):
 
 @app.route('/video_player', methods=['post', 'get'])
 def video_player():
+    redirectToDevelopmentPage()
     if 'user' in session:
         current_user = accessing_the_database(QUERY_COMMANDS['get_user'], session['user'])[0]
     search = findVideo()
@@ -419,37 +451,40 @@ def video_player():
         abort(404)
     else:
         video_file = video_file[0]
-    if 'user' in session and (request.args.get('like_button_pressed') == 'True') and video_file.username != session['user']:
-        if f"?{int(request.args.get('video_file'))}?" not in current_user.my_likes:
-            accessing_the_database(QUERY_COMMANDS['add_one_like'], int(request.args.get('video_file')), changes=True)
-            accessing_the_database(QUERY_COMMANDS['add_likes_to_user'], f"{int(request.args.get('video_file'))}?", session['user'], changes=True)
-            accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)  # Нужно 4 раза передать сессию
-            return redirect(url_for('video_player', video_file=int(request.args.get('video_file'))))
-        else:
-            place_of_like = current_user.my_likes.find('?' + str(request.args.get('video_file')) + '?')
-            current_user.my_likes = current_user.my_likes[:place_of_like] + \
-                                    current_user.my_likes[place_of_like + len(str(request.args.get('video_file'))) - 1:]
-            accessing_the_database(QUERY_COMMANDS['set_like_to_user'], current_user.my_likes, current_user.username, changes=True)
-            accessing_the_database(QUERY_COMMANDS['remove_like'], int(
-                request.args.get('video_file')), changes=True)
-            return redirect(url_for('video_player', video_file=int(
-                request.args.get('video_file'))))
-    elif (request.args.get('command') == 'delete_file') and ('role' in session) and session['role'] == 'admin':
-        accessing_the_database(QUERY_COMMANDS['delete_file'], video_file.id, changes=True)
-        os.remove(UPLOAD_FOLDER_FOR_VIDEOS + video_file.file_path[
-                                             video_file.file_path.rfind(
-                                                 '/'):])
-        accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)
-        return redirect(url_for('videos', category='All categories'))
-
-    else:
-        if not video_file:  # Если пользователь все-таки не вставил свой id в строку поиска и такого видео нет
-            abort(404)
-        if 'user' in session and video_file.username != session['user']:
-            if f"?{video_file.id}?" not in current_user.my_views: # Если видео не просмотрено(нет в просмотрах)
-                accessing_the_database(QUERY_COMMANDS['add_one_view'], video_file.id, changes=True)
-                accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", session['user'], changes=True)
+    if request.method == "POST":
+        json_request = request.get_json()
+        if 'user' in session and (json_request.get('like_button_pressed') == 'True') and video_file.username != session['user']:
+            if f"?{int(request.args.get('video_file'))}?" not in current_user.my_likes:
+                accessing_the_database(QUERY_COMMANDS['add_one_like'], int(request.args.get('video_file')), changes=True)
+                accessing_the_database(QUERY_COMMANDS['add_likes_to_user'], f"{int(request.args.get('video_file'))}?", session['user'], changes=True)
                 accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)  # Нужно 4 раза передать сессию
+                return redirect(url_for('video_player', video_file=int(request.args.get('video_file'))))
+            else:
+                place_of_like = current_user.my_likes.find('?' + str(request.args.get('video_file')) + '?')
+                current_user.my_likes = current_user.my_likes[:place_of_like] + \
+                                        current_user.my_likes[place_of_like + len(str(request.args.get('video_file'))) + 2 - 1:]
+                accessing_the_database(QUERY_COMMANDS['set_like_to_user'], current_user.my_likes, current_user.username, changes=True)
+                accessing_the_database(QUERY_COMMANDS['remove_like'], int(
+                    request.args.get('video_file')), changes=True)
+                return redirect(url_for('video_player', video_file=int(
+                    request.args.get('video_file'))))
+        elif (request.args.get('command') == 'delete_file') and ('role' in session) and session['role'] == 'admin':
+            accessing_the_database(QUERY_COMMANDS['delete_file'], video_file.id, changes=True)
+            video_file_path = UPLOAD_FOLDER_FOR_VIDEOS + video_file.file_path[
+                                                 video_file.file_path.rfind('/'):]
+            os.remove(video_file_path)
+            os.remove(video_file_path.rsplit('.', 1)[0] + '.jpg')
+            accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)
+            return redirect(url_for('videos', category='All categories'))
+
+        else:
+            if not video_file:  # Если пользователь все-таки не вставил свой id в строку поиска и такого видео нет
+                abort(404)
+            if 'user' in session and video_file.username != session['user']:
+                if f"?{video_file.id}?" not in current_user.my_views: # Если видео не просмотрено(нет в просмотрах)
+                    accessing_the_database(QUERY_COMMANDS['add_one_view'], video_file.id, changes=True)
+                    accessing_the_database(QUERY_COMMANDS['add_view_to_user'], f"{video_file.id}?", session['user'], changes=True)
+                    accessing_the_database(QUERY_COMMANDS[f'recalculate_{video_file.category.lower()}_rating'], *([video_file.username, video_file.category] * 3), video_file.username, changes=True)  # Нужно 4 раза передать сессию
     if 'user' in session and (f"?{request.args.get('video_file')}?" in current_user.my_likes or video_file.username == session['user']):
         like_button = 'liked'
     else:
@@ -461,6 +496,7 @@ def video_player():
 
 @app.route('/add_video', methods=['post', 'get'])
 def add_new_video():
+    redirectToDevelopmentPage()
     if not 'user' in session:
         # Если не user залогинен, вызывает ошибку 403 и переходит на ф-ию have_no_permission
         abort(403)
@@ -492,12 +528,19 @@ def add_new_video():
                 message = upload_file(file, UPLOAD_FOLDER_FOR_VIDEOS, 'video', file_bytes, last_id=last_id)
                 if message == 'Success':
                     accessing_the_database(QUERY_COMMANDS['create_file'], session['user'], video_name, category, new_video_file.file_path, changes=True)
+                    createPoster(new_video_file)
             else:
                 message = 'Empty video name'
         else:
             message = 'Load a file'
 
     return render_template('add_new_video.html', message=message)
+
+
+@app.route('/development_page')
+def development_page():
+    return render_template('development_page.html')
+
 
 @app.after_request
 def add_header(r):

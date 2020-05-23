@@ -22,6 +22,14 @@ sign-up-button.button {
   border: 0px;
 }
 
+hr {
+  transition: 1s;
+}
+
+.dark-theme hr {
+  background-color: rgba(200, 200, 200, .9);
+}
+
 .box {
   width: 500px;
   padding: 40px;
@@ -141,10 +149,18 @@ input[type="submit"]:hover {
 }
 
 .url:hover {
-  color: #4bdb72;
+  color: #256e39;
   background: none;
   border: 0;
   text-decoration: none;
+}
+
+.dark-theme .url {
+  color: #0007ff;
+}
+
+.dark-theme .url:hover {
+  color: #4bdb72;
 }
 
 .page-404-text {
@@ -188,6 +204,10 @@ input[type="submit"]:hover {
   text-align: center;
 }
 
+.dark-theme .video-content-element {
+  color: rgba(250, 250, 250, .9);
+}
+
 .video-content-element:hover {
   text-decoration: none;
 }
@@ -216,10 +236,11 @@ input[type="submit"]:hover {
 
 .nav-item {
   transition: 0.25s;
+  text-align: center;
 }
 
 .nav-item:hover {
-  transform: scale(1.2);
+  transform: scale(1.12);
 }
 
 .navbar-brand {
@@ -230,12 +251,8 @@ input[type="submit"]:hover {
 }
 
 .navbar-brand:hover {
-  transform: scale(1.2);
+  transform: scale(1.12);
 
-}
-
-.navbar-nav {
-  padding-left: 50px;
 }
 
 .light-theme .bg-light {
@@ -287,6 +304,7 @@ input[type="submit"]:hover {
   transform: translate(-50%, 0%);
   margin-bottom: 2ex;
   max-width: 13cm;
+  border-radius: 1%;
 }
 
 .profile-image-box {
@@ -333,6 +351,10 @@ input[type="submit"]:hover {
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   background-color: #75c3f3;
+}
+
+.dark-theme .nav-link.active {
+  background-color: #44708B;
 }
 
 .scoreboard-element {
@@ -420,7 +442,7 @@ input[type="submit"]:hover {
 }
 
 .light-theme .list-group-item.active {
-  color: #fff;
+  color: rgba(250, 250, 250, .9);;
   background-color: #75c3f3;
   border-color: #75c3f3;
   transition: 1s;
@@ -433,14 +455,20 @@ input[type="submit"]:hover {
   transition: 1s;
 }
 
+.list-group-item {
+  transition: 1s;
+}
+
 .dark-theme .list-group-item {
-  background-color: #A3B4C7;
+  background-color: rgba(50, 50, 50, .9);
   color: rgba(250, 250, 250, .9);
+  transition: 1s;
 }
 
 .page-link {
   color: #75c3f3;
   font-size: 2.5ex;
+  transition: 1s;
 }
 
 .page-link:hover {
@@ -494,15 +522,22 @@ input[type="submit"]:hover {
   width: 40%;
 }
 
-.like-toggle {
-  cursor: pointer;
-  font-size: 3ex;
-  text-decoration: none;
-  transition: 0.25s;
+.light-theme #trash-news {
+  color: #4D6FBB;
+  transition: 1s;
 }
 
-.like-toggle:hover {
-  font-size: 4ex;
+.dark-theme #trash-news {
+  color: #75c3f3 !important;
+  transition: 1s;
+}
+
+.dark-theme a.dropdown-item:hover {
+  background-color: rgba(50, 50, 50, .9);
+}
+
+.dark-theme a.dropdown-item {
+  color: rgba(250, 250, 250, .9);
 }
 
 ul.ddropdownn-inside {
@@ -531,13 +566,106 @@ ul.ddropdownn .ddropdownn-inside a:hover { background: #AFEEEE; }
 
 .dark-theme #video-text {
   color: rgba(250, 250, 250, .9);
+  transform: 1s;
+}
+
+.dark-theme #video-text:hover {
+  color: #75c3f3;
+  transform: 1s;
 }
 
 .dark-theme .page-link {
-  background-color: #C8C8C8;
-  border-color: #B0B1B1;
+  background-color: rgba(50, 50, 50, .9);
+  border-color: rgba(10, 10, 10, .1);
+  color: #75c3f3;
+  transition: 1s;
+}
+
+.dark-theme .dropdown-menu {
+  background-color: rgba(10, 10, 10, .9);
+ }
+
+.dark-theme .News-textarea {
+  background-color: rgba(10, 10, 10, .9);
+  color: rgba(250, 250, 250, .9);
+}
+
+.dark-theme #dropdownMenuButton {
+  border-color: rgba(250, 250, 250, .9);
+}
+
+#dropdownMenuButton {
+  transition: 1s;
+}
+
+.alert-primary {
+  width: 75%;
+  left: 12.5%;
+  text-align: center;
+  transition: 1s;
+  background-color: #75c3f3;
+  border-color: #75c3f3;
+}
+
+.dark-theme .alert-primary {
+  background-color: #44708B;
+  border-color: #44708B;
   color: #75c3f3;
 }
 
+.light-theme .like {
+  color: rgb(11, 97, 255);
+  font-size: 3ex;
+}
 
+.dark-theme .like {
+  color: rgb(115, 179, 255);
+  font-size: 3ex;
+}
+
+.like-label {
+  transition: .5s;
+  transform: translateY(0%);
+  opacity: 0;
+  display: block;
+  font-weight: 400;
+}
+
+#likeButton {
+  cursor: pointer;
+  display: block;
+  position: relative;
+  width: 30%;
+  left: 35%;
+}
+
+.light-theme #likeButton:hover {
+  color: rgb(0, 27, 185);
+}
+
+.dark-theme #likeButton:hover {
+  color: rgb(96, 164, 230);
+}
+
+#likeButton:hover .like-label {
+  transition: .5s;
+  transform: translateY(25%);
+  opacity: 1;
+  overflow: visible;
+}
+
+.admin-page-container {
+  display: block;
+}
+
+.development-container {
+  padding-top: 3em;
+  position: relative;
+  display: block;
+  text-align: center;
+}
+
+.development-mode-text {
+  font-size: 1.5em;
+}
 

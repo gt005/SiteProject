@@ -22,9 +22,12 @@
     </div>
   {% endif %}
   <input type="text" name="video_name" placeholder="Input video name" required>
+  <div class="alert alert-primary" role="alert">
+    Max size of video - 10 Mb!
+  </div>
   <div class="dada">
-  <label for="myfile" class="chous">Choose file</label>
-  <input type="file" class="my" id="myfile" name="video_file" multiple="multiple" accept="video/*" style="left:50%;" required>
+    <label for="myfile" class="chous">Choose file</label>
+    <input type="file" class="my" id="myfile" name="video_file" multiple="multiple" accept="video/*" style="left:50%;" required>
   </div>
   <div class="form-group" style="width:65%;left:17.5%;position:relative;">
     <label for="exampleFormControlSelect1">Select a category</label>
@@ -36,4 +39,18 @@
   </div>
   <input type="submit" name="do_signin" value="Add">
 </form>
+<script>
+  const videoFileInput = document.querySelector("#myfile"),
+          labelForInputVideoFile = document.querySelector('.chous');
+  videoFileInput.onchange = function () {
+    let fileName = this.value;
+    if (fileName !== "") {
+      labelForInputVideoFile.textContent = "File selected";
+    }
+    else {
+      labelForInputVideoFile.textContent = "Choose file";
+    }
+  }
+
+</script>
 {% endblock %}

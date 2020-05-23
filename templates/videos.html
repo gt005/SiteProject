@@ -46,7 +46,7 @@
 		    <div class="listVideoElement">
 		      <li style="list-style-type: none;overflow: hidden;align-items: center;min-width: 7cm;">
 		        <a href="{{ url_for('video_player', video_file=video.id)}}" class="video-content-element" style="text-align: center;">
-		          	<video width="80%" height="100%" controls="controls" preload="metadata" autobuffer="2" style="left: 10%;position: relative;min-width: 5cm;">
+		          	<video width="80%" height="100%" poster="{{ video.file_path.rsplit('.', 1)[0] + '.jpg' }}" controls="controls" preload="none" style="left: 10%;position: relative;min-width: 5cm;">
 				   		<source src="{{ video.file_path }}" class="opened-video" type='video/mp4; codecs="avc1.42E01E, mp4a.40.2"'>
 					</video>
 		          	<p id="video-text">{{ video.file_name }}<br>Creator: {{ video.username }}<br>Category: {{ video.category }}<br>{{ video.views }} views/{{ video.likes }} likes</p>

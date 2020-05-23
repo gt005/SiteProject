@@ -9,62 +9,71 @@
 {% endblock %}
 
 {% block content_title %}
-	<span style="position: absolute !important;left: 50%;transform: translateX(-50%) !important;">Admin panel</span>
+	<span style="text-align: center;position: absolute !important;left: 50%;transform: translateX(-50%) !important;">Admin panel</span>
 	<br>
 {% endblock %}
 
 {% block content %}
-<div class="add-news">
-	<h2>Creating news</h2>
-	{% if message.startswith('Success') %}
+<div class="admin-page-container">
+	<div class="development-container">
+		<span class="development-mode-text">
+			Development mode now is on!
+		</span>
+		<input  type="submit" value="Toggle">
+	</div>
+	<div class="add-news">
+		<h2>Creating news</h2>
+		{% if message.startswith('Success') %}
 		<div class="alert alert-success" role="alert">
-  			{{ message }}
+			{{ message }}
 		</div>
-	{% elif message %}
+		{% elif message %}
 		<div class="alert alert-danger" role="alert">
-  			{{ message }}
+			{{ message }}
 		</div>
-	{% endif %}
-	<form class="News-form" href='' method="POST">
-  		<input type="text" maxlength="100" name='news_header' class="form-control"  placeholder="News header">
-		<h3><textarea style="width: 100%;" name="news_text" cols="30" rows="10" class="News-textarea" placeholder="Share some news!" maxlength="64000"></textarea></h3>
-		<input type="submit" name="add-news" value="Share!">
-	</form>
-</div>
-<hr style="position: relative;width: 100%;left:0px;height: 2px;">
-<div class="user-settings" style="text-align: center;">
-	<h2>Users settings</h2>
+		{% endif %}
+		<form class="News-form" href='' method="POST">
+			<input type="text" maxlength="100" name='news_header' class="form-control"  placeholder="News header">
+			<h3><textarea style="width: 100%;" name="news_text" cols="30" rows="10" class="News-textarea" placeholder="Share some news!" maxlength="64000"></textarea></h3>
+			<input type="submit" name="add-news" value="Share!">
+		</form>
+	</div>
+	<hr style="position: relative;width: 100%;left:0px;height: 2px;">
+	<div class="user-settings" style="text-align: center;">
+		<h2>Users settings</h2>
 		{% if message_to_the_users_search %}
-			<div class="alert alert-danger" role="alert">
-  			{{ message_to_the_users_search }}
-			</div>
+		<div class="alert alert-danger" role="alert">
+			{{ message_to_the_users_search }}
+		</div>
 		{% endif %}
 		<form class="News-form" href='' method="POST">
 			<input type="text" maxlength="100" name='search-username' class="form-control"  placeholder="Input username to find user">
 			<input type="submit" name="find-user" value="Find">
 		</form>
-	{% if user %}
+		{% if user %}
 		<div class="print-user">
 			{% for i in user %}
-				<div class="dropdown" style="padding-bottom: 2ex; width: 30%;text-align: center;">
-				  <button style="background-color: #75c3f3;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				    <span style="font-size: 1.2em;color: #4D6FBB;">{{ i.username }}</span>
-				  </button>
-				  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-				    {% if i.role_type == 'member' %}
-					    <a class="dropdown-item" href="{{ url_for('admin', command='delete', user=i.username) }}">Delete user</a>
-					    <hr style="padding: 0;margin:0;">
-					    <a class="dropdown-item" href="{{ url_for('admin', command='change_role', user=i.username) }}" style="color:red;">Change role to admin</a>
-					    <hr style="padding: 0;margin:0;">
+			<div class="dropdown" style="padding-bottom: 2ex; width: 30%;text-align: center;">
+				<button style="background-color: #75c3f3;" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<span style="font-size: 1.2em;color: #4D6FBB;">{{ i.username }}</span>
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					{% if i.role_type == 'member' %}
+					<a class="dropdown-item" href="{{ url_for('admin', command='delete', user=i.username) }}">Delete user</a>
+					<hr style="padding: 0;margin:0;">
+					<a class="dropdown-item" href="{{ url_for('admin', command='change_role', user=i.username) }}" style="color:red;">Change role to admin</a>
+					<hr style="padding: 0;margin:0;">
 					{% endif %}
-				    <a class="dropdown-item disabled" href="" style="color: #75c3f3;">{{ i.role_type }}</a>
-				  </div>
+					<a class="dropdown-item disabled" href="" style="color: #75c3f3;">{{ i.role_type }}</a>
 				</div>
-  			{% endfor %}
+			</div>
+			{% endfor %}
 		</div>
-	{% endif %}
+		{% endif %}
+	</div>
+	<hr style="position: absolute;width: 100%;left:0px;">
 </div>
-<hr style="position: absolute;width: 100%;left:0px;">
+
 {% endblock %}
 
 
